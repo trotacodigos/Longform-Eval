@@ -1,0 +1,30 @@
+defaults:
+  decoding:
+    temperature: 0.2
+    top_p: 0.9
+    max_tokens: 2048
+
+models:
+# LLMs for general purpose
+  - name: gpt-4o
+    backend: openai
+    model_id: gpt-4o
+    decoding: {temperature: 0.2, top_p: 0.9, max_tokens: 2048}
+    
+  - name: gpt-4o-mini
+    backend: openai
+    model_id: gpt-4o-mini
+    decoding: {temperature: 0.2, top_p: 0.9, max_tokens: 1024}
+
+# Open-source LLMs for general purpose - realistic scenarios
+  - name: llama3-8b-instruct
+    backend: ollama
+    model_id: llama3:8b
+    decoding: {temperature: 0.2, top_p: 0.9, max_tokens: 2048}
+    num_ctx: 8192
+
+  - name: qwen2.5-32b-instruct
+    backend: ollama
+    model_id: qwen2.5:32b
+    decoding: {temperature: 0.2, top_p: 0.9, max_tokens: 2048}
+    num_ctx: 16384

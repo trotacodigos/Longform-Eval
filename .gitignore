@@ -1,3 +1,5 @@
+.venv/
+unittest/
 *.ipynb
 .DS_Store
 script/
