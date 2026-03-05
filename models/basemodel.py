@@ -57,9 +57,7 @@ class BaseModel:
         return self
 
 
-# -----------------------------
 # OpenAI
-# -----------------------------
 class OpenAIModel(BaseModel):
     def __init__(self, name: str, model_id: str, decoding: Decoding | dict | None = None):
         super().__init__(name, model_id, decoding)
@@ -82,11 +80,41 @@ class OpenAIModel(BaseModel):
         in_token = getattr(usage, "prompt_tokens", None) if usage else None
         out_token = getattr(usage, "completion_tokens", None) if usage else None
         return text, in_token, out_token
+    
+    
+class OpenAIThinking(OpenAIModel):
+    def __init__(self, name, model_id, decoding, thinking: bool = True):
+        super().__init__(name, model_id, decoding)
+        self.thinking = thinking
+
+    @timed
+    def _call(self, system: str, user: str):
+        kwargs = to_openai_kwargs(self.decoding)
+
+        kwargs.pop("top_p", None)
+        kwargs.pop("frequency_penalty", None)
+        kwargs.pop("presence_penalty", None)
+
+        if self.thinking:
+            kwargs.pop("temperature", None)
+        
+        resp = self.client.chat.completions.create(
+            model=self.model_id,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            thinking=self.thinking,
+            **kwargs,
+        )
+        text = resp.choices[0].message.content.strip()
+        usage = getattr(resp, "usage", None)
+        in_token = getattr(usage, "prompt_tokens", None) if usage else None
+        out_token = getattr(usage, "completion_tokens", None) if usage else None
+        return text, in_token, out_token
 
 
-# -----------------------------
 # Ollama
-# -----------------------------
 class OllamaModel(BaseModel):
     def __init__(self, name, model_id, decoding=None, host=None):
         super().__init__(name, model_id, decoding or {})
@@ -136,9 +164,7 @@ class OllamaModel(BaseModel):
         return text, in_token, out_token
 
 
-# -----------------------------
 # HF Chat (vLLM/TGI /v1/chat/completions)
-# -----------------------------
 class HFChatModel(BaseModel):
     def __init__(
         self,
