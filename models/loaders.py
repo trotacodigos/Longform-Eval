@@ -3,7 +3,11 @@ from typing import Optional, List
 import yaml
 
 from . import REGISTRY
-from .basemodel import BaseModel, Decoding, OpenAIModel, OllamaModel, HFChatModel
+from .base import BaseModel, Decoding
+from .base_openai import OpenAIModel
+from .base_ollama import OllamaModel
+from .base_hf import HFChatModel
+
 
 def load_models_from_yaml(cfg_path: Path, select_names: Optional[List[str]] = None) -> List[BaseModel]:
     cfg = yaml.safe_load(Path(cfg_path).read_text(encoding="utf-8"))

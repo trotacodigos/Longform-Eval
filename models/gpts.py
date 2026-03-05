@@ -1,4 +1,5 @@
-from .basemodel import OpenAIModel, OpenAIThinking, Decoding
+from .base_openai import OpenAIModel, OpenAIThinking
+from .base import Decoding
 
 
 class GPT4o(OpenAIModel):

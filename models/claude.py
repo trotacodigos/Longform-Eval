@@ -1,4 +1,5 @@
-from .basemodel import AnthropicModel, Decoding
+from .base_anthropic import AnthropicModel
+from .base import Decoding
 
 
 class ClaudeSonnet4_5(AnthropicModel):
