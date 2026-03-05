@@ -1,7 +1,4 @@
 from .basemodel import OpenAIModel, OpenAIThinking, Decoding
-from .tools import timed
-
-from openai import OpenAI
 
 
 class GPT4o(OpenAIModel):

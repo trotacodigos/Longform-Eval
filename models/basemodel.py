@@ -1,11 +1,12 @@
 import os
-import time
-import math
 import requests
+import copy
 
 from .tools import timed, rough_token_count, get_keys
 
 from openai import OpenAI
+from anthropic import Anthropic
+
 from dataclasses import dataclass, asdict
 from typing import Optional, List, Dict, Any
 
@@ -15,7 +16,6 @@ class Decoding:
     temperature: float = 0.2
     top_p: float = 0.9
     max_tokens: int = 1024
-    # 선택 필드(있는 경우만 각 백엔드로 pass-through)
     stop: Optional[List[str]] = None
     num_ctx: Optional[int] = None               # Ollama 컨텍스트
     frequency_penalty: Optional[float] = None   # OpenAI
@@ -29,15 +29,12 @@ class BaseModel:
     def __init__(self, name: str, model_id: str, decoding: dict | Decoding | None):
         self.name = name
         self.model_id = model_id
-        # dict, None 모두 허용. 최종적으로 Decoding 인스턴스로 보관
         self.decoding = decoding if isinstance(decoding, Decoding) else Decoding(**(decoding or {}))
 
     def _call(self, system: str, user: str):
-        """서브클래스에서 구현. (text, in_tok, out_tok) 반환. @timed는 서브클래스에 붙일 것."""
         raise NotImplementedError
 
     def generate(self, system: str, user: str):
-        # _call은 @timed로 감싸져 (result, latency)를 반환해야 함
         (text, in_token, out_token), latency = self._call(system, user)
         if in_token is None:
             in_token = rough_token_count(user)
@@ -50,11 +47,13 @@ class BaseModel:
         }
 
     def with_decoding(self, **overrides):
-        # 공통 디코딩 덮어쓰기
+        new_model = copy.copy(self)
+        new_model.decoding = copy.deepcopy(self.decoding)
+
         for k, v in overrides.items():
-            if hasattr(self.decoding, k):
-                setattr(self.decoding, k, v)
-        return self
+            if hasattr(new_model.decoding, k):
+                setattr(new_model.decoding, k, v)
+        return new_model
 
 
 # OpenAI
@@ -75,13 +74,15 @@ class OpenAIModel(BaseModel):
             ],
             **kwargs,
         )
-        text = resp.choices[0].message.content.strip()
+        content = resp.choices[0].message.content
+        text = (content or "").strip()
+
         usage = getattr(resp, "usage", None)
         in_token = getattr(usage, "prompt_tokens", None) if usage else None
         out_token = getattr(usage, "completion_tokens", None) if usage else None
         return text, in_token, out_token
     
-    
+
 class OpenAIThinking(OpenAIModel):
     def __init__(self, name, model_id, decoding, thinking: bool = True):
         super().__init__(name, model_id, decoding)
@@ -107,7 +108,9 @@ class OpenAIThinking(OpenAIModel):
             thinking=self.thinking,
             **kwargs,
         )
-        text = resp.choices[0].message.content.strip()
+        content = resp.choices[0].message.content
+        text = (content or "").strip()
+
         usage = getattr(resp, "usage", None)
         in_token = getattr(usage, "prompt_tokens", None) if usage else None
         out_token = getattr(usage, "completion_tokens", None) if usage else None
@@ -200,13 +203,44 @@ class HFChatModel(BaseModel):
         response = requests.post(self.endpoint, json=payload, timeout=600)
         response.raise_for_status()
         data = response.json()
-        text = data["choices"][0]["message"]["content"].strip()
+        content = data["choices"][0]["message"]["content"]
+        text = (content or "").strip()
 
         usage = data.get("usage", {}) or {}
         in_token = usage.get("prompt_tokens")
         out_token = usage.get("completion_tokens")
         return text, in_token, out_token
     
+
+class AnthropicModel(BaseModel):
+    def __init__(self, name: str, model_id: str, decoding: Decoding | dict | None = None):
+        super().__init__(name, model_id, decoding)
+
+        keys = get_keys("ANTHROPIC_API_KEYS")
+        api_key = keys[0] if keys else os.environ.get("ANTHROPIC_API_KEY")
+        
+        self.client = Anthropic(api_key=api_key)
+
+    @timed
+    def _call(self, system: str, user: str):
+        kwargs = to_anthropic_kwargs(self.decoding)
+        
+        resp = self.client.messages.create(
+            model=self.model_id,
+            system=system,
+            messages=[
+                {"role": "user", "content": user},
+            ],
+            **kwargs,
+        )
+        
+        text = (resp.content[0].text or "").strip() if resp.content else ""
+        
+        usage = getattr(resp, "usage", None)
+        in_token = getattr(usage, "input_tokens", None) if usage else None
+        out_token = getattr(usage, "output_tokens", None) if usage else None
+        
+        return text, in_token, out_token
     
 
 def _drop_none(d: Dict[str, Any]) -> Dict[str, Any]:
@@ -251,4 +285,16 @@ def to_hf_generate_kwargs(dec: Decoding) -> Dict[str, Any]:
     }
     if d.get("repetition_penalty") is not None:
         out["repetition_penalty"] = d["repetition_penalty"]
+    return _drop_none(out)
+
+def to_anthropic_kwargs(dec: Decoding) -> Dict[str, Any]:
+    d = asdict(dec)
+    out = {
+        "temperature": d["temperature"],
+        "top_p": d["top_p"],
+        "max_tokens": d["max_tokens"] if d["max_tokens"] is not None else 1024,
+    }
+    if d.get("stop"):
+        out["stop_sequences"] = d["stop"]
+    
     return _drop_none(out)
