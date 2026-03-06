@@ -10,6 +10,8 @@ accelerate
 torch
 sentencepiece
 protobuf
+sacrebleu
+mecab-python3
 
 # Data Processing
 pandas
