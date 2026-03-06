@@ -1,0 +1,1 @@
+# Exaone4.0-32B, K-Exaone-236B-A23B
