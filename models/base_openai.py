@@ -1,4 +1,4 @@
-from .tools import timed, get_keys, extract_token_usage
+from .tools import get_keys, extract_token_usage
 from .base import BaseModel, Decoding
 
 from openai import OpenAI
@@ -28,7 +28,6 @@ class OpenAIModel(BaseModel):
         keys = get_keys("OPENAI_API_KEYS")
         self.client = OpenAI(api_key=keys[0])
 
-    @timed
     def _call(self, system: str, user: str):
         kwargs = to_openai_kwargs(self.decoding)
         resp = self.client.chat.completions.create(

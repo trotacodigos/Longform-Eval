@@ -1,15 +1,7 @@
 import time
 import random
 import os
-from typing import Any, Tuple
-
-def timed(call):
-    def wrapper(*args, **kwargs):
-        t0 = time.perf_counter()
-        out = call(*args, **kwargs)
-        latency = time.perf_counter() - t0
-        return out, latency
-    return wrapper
+from typing import Any, Tuple, Dict
 
 
 def get_keys(name: str) -> list[str]:

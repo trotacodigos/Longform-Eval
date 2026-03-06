@@ -1,5 +1,5 @@
 from .base import BaseModel, Decoding
-from .tools import timed, _drop_none, extract_token_usage
+from .tools import _drop_none, extract_token_usage
 
 import os
 import requests
@@ -30,7 +30,6 @@ class OllamaModel(BaseModel):
         self.session = requests.Session()
         self.session.headers.update({"Connection": "keep-alive"})
 
-    @timed
     def _call(self, system: str, user: str):
         options = to_ollama_options(self.decoding)
 

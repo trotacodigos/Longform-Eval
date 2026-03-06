@@ -4,7 +4,7 @@ from typing import Dict, Any
 from anthropic import Anthropic
 
 from .base import Decoding, BaseModel
-from .tools import get_keys, timed, _drop_none, extract_token_usage
+from .tools import get_keys, _drop_none, extract_token_usage
 
 
 def to_anthropic_kwargs(dec: Decoding) -> Dict[str, Any]:
@@ -29,7 +29,6 @@ class AnthropicModel(BaseModel):
         
         self.client = Anthropic(api_key=api_key)
 
-    @timed
     def _call(self, system: str, user: str):
         kwargs = to_anthropic_kwargs(self.decoding)
         

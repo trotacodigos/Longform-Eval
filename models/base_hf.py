@@ -1,5 +1,5 @@
 from .base import BaseModel, Decoding
-from .tools import timed, _drop_none, extract_token_usage
+from .tools import _drop_none, extract_token_usage
 from .base_openai import to_openai_kwargs
 
 from dataclasses import asdict
@@ -38,7 +38,6 @@ class HFChatModel(BaseModel):
         self.prompt_adapter = prompt_adapter
         self.tgt_lang = tgt_lang
 
-    @timed
     def _call(self, system: str, user: str):
         kwargs = to_openai_kwargs(self.decoding)
 
