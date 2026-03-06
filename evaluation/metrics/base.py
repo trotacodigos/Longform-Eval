@@ -12,7 +12,7 @@ class BaseEvaluator:
         self.tokenizer = None
 
     def _format_prompts(self, data) -> List[str]:
-        return [f"candidate: {item.get("tgt_seg", "")} reference: {item.get("ref_seg", "")}" for item in data]
+        return [f"candidate: {item.get("tgt_seg", "")} source: {item.get("src_seg", "")} reference: {item.get("ref_seg", "")}" for item in data]
     
     def _evaluate_batch(self, data: List[Dict[str, str]]) -> List[float]:
         raise NotImplementedError
