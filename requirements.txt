@@ -1,6 +1,19 @@
+# LLM API
 openai
 anthropic
+requests
+
+# Evaluation Metrics
+unbabel-comet
 transformers
 accelerate
-bitsandbytes
 torch
+sentencepiece
+protobuf
+
+# Data Processing
+pandas
+numpy
+
+# Quantization
+bitsandbytes
