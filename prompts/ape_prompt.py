@@ -21,8 +21,9 @@ def load_document(doc_id) -> Tuple[str, str]:
     tgt_doc = tgt_path.read_text(encoding="utf-8") if tgt_path.exists() else ""
     return src_doc, tgt_doc
 
-def build_prompt(row: dict, has_doc=True):
-    # Schema Validation
+
+def build_prompt_with_doc(row: dict, has_doc=True):
+    """src and tgt documents as an additional information"""
     required = ["src_lang", "tgt_lang", "src_seg", "tgt_seg"]
     for k in required:
         if k not in row: raise KeyError(f"Missing key in data: {k}")
@@ -38,8 +39,10 @@ def build_prompt(row: dict, has_doc=True):
     template_row = next((t for t in templates if t["has_doc"] == has_doc), None)
     
     user_kwargs = {
-        "src_lang": src_lang, "tgt_lang": tgt_lang,
-        "src_seg": row["src_seg"], "tgt_seg": row["tgt_seg"]
+        "src_lang": src_lang, 
+        "tgt_lang": tgt_lang,
+        "src_seg": row["src_seg"], 
+        "tgt_seg": row["tgt_seg"],
     }
     if has_doc:
         user_kwargs.update({"src_doc": src_doc, "tgt_doc": tgt_doc})
@@ -48,3 +51,8 @@ def build_prompt(row: dict, has_doc=True):
     system = template_row["system"].format(tgt_lang=tgt_lang)
     
     return system, user
+
+
+def build_prompt_as_doc(row: dict):
+    """src and tgt documents as inputs"""
+    return build_prompt_with_doc(row, has_doc=False)
