@@ -8,7 +8,7 @@ METRICX_SCORE_TOKEN_ID = 250089  # <extra_id_10>
 
 
 class MetricX_Metric(BaseEvaluator):
-    def __init__(self, model_name: str = "google/metricx-24-hybrid-xl-v2p6-bfloat16", batch_size: int = 16, model=None, tokenizer=None):
+    def __init__(self, model_name: str = "google/metricx-24-hybrid-xxl-v2p6-bfloat16", batch_size: int = 16, model=None, tokenizer=None):
         super().__init__("MetricX-24", batch_size, max_input_tokens=1536)
         # If loaded, reuse them.
         if model is not None and tokenizer is not None:
@@ -16,7 +16,7 @@ class MetricX_Metric(BaseEvaluator):
             self.model = model
             self.tokenizer = tokenizer
         else:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.tokenizer = AutoTokenizer.from_pretrained("google/mt5-xl")
             self.model = AutoModelForSeq2SeqLM.from_pretrained(
                 model_name,
                 torch_dtype=torch.float32,
@@ -58,8 +58,8 @@ class MetricX_Metric(BaseEvaluator):
 
 
 class MetricX_QE_Metric(MetricX_Metric):
-    def __init__(self, model_name: str = "google/metricx-24-hybrid-xxl-v2p6", batch_size=16, model=None, tokenizer=None):
-        super().__init__(model_name, batch_size, model, tokenizer)
+    def __init__(self, batch_size=16, model=None, tokenizer=None):
+        super().__init__(batch_size=batch_size, model=model, tokenizer=tokenizer)
         self.name = "MetricX-24-QE"
 
     def _format_prompts(self, data) -> List[str]:
