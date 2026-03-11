@@ -6,7 +6,7 @@ from .tools import extract_token_usage
 
 
 class ClovaModel(HFChatModel):
-    def __init__(self, name="clova", 
+    def __init__(self, name="hcx-seed-thinking-32b", 
                  model_id="naver/HyperCLOVAX-SEED-Think-32B", 
                  endpoint="http://localhost:8000/v1", 
                  sampling_params: ClovaParams | dict | None = None):
