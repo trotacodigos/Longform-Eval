@@ -1,33 +1,30 @@
-from .tools import rough_token_count, _drop_none
+from tools import rough_token_count
+from sampling import SamplingParams
 
 import os, time
 import copy
 import csv
-from dataclasses import dataclass
-from typing import Optional, List
+import dataclasses
+from abc import ABC, abstractmethod
 
 
-@dataclass
-class Decoding:
-    temperature: float = 0.2
-    top_p: float = 0.9
-    max_tokens: int = 1024
-    stop: Optional[List[str]] = None
-    num_ctx: Optional[int] = None               # Ollama context size
-    frequency_penalty: Optional[float] = None   # OpenAI
-    presence_penalty: Optional[float] = None    # OpenAI
-    repetition_penalty: Optional[float] = None  # HF generate 계열
-    min_p: Optional[float] = None
-
-
-class BaseModel:
-    def __init__(self, name: str, model_id: str, decoding: dict | Decoding | None):
+class BaseModel(ABC):
+    """
+    Abstract base class for all model implementations.
+    Subclasses must implement _call.
+    """
+    def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None):
         self.name = name
         self.model_id = model_id
-        self.decoding = decoding if isinstance(decoding, Decoding) else Decoding(**(decoding or {}))
+        self.sampling_params = (
+            sampling_params
+            if isinstance(sampling_params, SamplingParams)
+            else SamplingParams.from_dict(sampling_params or {})
+        )
 
+    @abstractmethod
     def _call(self, system: str, user: str) -> tuple:
-        raise NotImplementedError
+        ...
 
     def generate(self, system: str, user: str, log_path: str = "inference_result.csv"):
         t0 = time.perf_counter()
@@ -39,19 +36,17 @@ class BaseModel:
         if out_token is None:
             out_token = rough_token_count(text)
 
-        # tokens per second
         tps = out_token / latency if latency > 0 else 0.0
 
         metrics = {
             "model_name": self.name,
             "input_token": int(in_token),
             "output_token": int(out_token),
-            "latency_sec": round(float(latency), 4), # end-to-end latency
+            "latency_sec": round(float(latency), 4),
             "tps": round(float(tps), 2)
         }    
 
         self._log_to_csv(metrics, log_path)
-
         return text, metrics
     
     def _log_to_csv(self, metrics: dict, log_path: str):
@@ -66,12 +61,15 @@ class BaseModel:
 
             writer.writerow(metrics)
 
-    
-    def with_decoding(self, **overrides):
-        new_model = copy.copy(self)
-        new_model.decoding = copy.deepcopy(self.decoding)
+    def with_sampling(self, **overrides):
+        """
+        Return a copy of the model with updated sampling parameters.
+        The original model is not modified.
 
-        for k, v in overrides.items():
-            if hasattr(new_model.decoding, k):
-                setattr(new_model.decoding, k, v)
+        Example:
+            greedy = model.with_sampling(temperature=0.0)
+            creative = model.with_sampling(temperature=1.0, top_p=0.95)
+        """
+        new_model = copy.copy(self)
+        new_model.sampling_params = dataclasses.replace(self.sampling_params, **overrides)
         return new_model

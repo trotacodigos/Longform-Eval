@@ -13,9 +13,6 @@ def get_keys(name: str) -> list[str]:
     return keys
 
 
-def _drop_none(d: Dict[str, Any]) -> Dict[str, Any]:
-    return {k: v for k, v in d.items() if v is not None}
-
 def rough_token_count(text: str) -> int:
     if not text:
         return 0
