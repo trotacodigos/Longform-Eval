@@ -1,14 +1,14 @@
 import os
 from anthropic import Anthropic
 
-from base import BaseModel
-from sampling import ClaudeParams
-from tools import get_keys, extract_token_usage
+from .base import BaseModel
+from .sampling import ClaudeParams
+from .tools import get_keys, extract_token_usage
 
     
 class AnthropicModel(BaseModel):
     def __init__(self, name: str, model_id: str, sampling_params: ClaudeParams | dict | None = None):
-        super().__init__(name, model_id, sampling_params)
+        super().__init__(name, model_id, sampling_params or ClaudeParams)
         keys = get_keys("ANTHROPIC_API_KEYS")
         api_key = keys[0] if keys else os.environ.get("ANTHROPIC_API_KEY")
         self.client = Anthropic(api_key=api_key)

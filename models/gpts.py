@@ -1,26 +1,17 @@
-from .base_openai import OpenAIModel, OpenAIThinking
-from .base import Decoding
+from .base_openai import OpenAIModel
+from .sampling import OpenAIParams
 
 
 class GPT4o(OpenAIModel):
-    def __init__(self, decoding=None):
-        super().__init__("gpt-4o", "gpt-4o", decoding or Decoding())
-        
+    def __init__(self, sampling_params=None):
+        super().__init__("gpt-4o", "gpt-4o", sampling_params or OpenAIParams())
+
 
 class GPT4oMini(OpenAIModel):
-    def __init__(self, decoding=None):
-        super().__init__("gpt-4o-mini", "gpt-4o-mini", decoding or Decoding())
+    def __init__(self, sampling_params=None):
+        super().__init__("gpt-4o-mini", "gpt-4o-mini", sampling_params or OpenAIParams())
 
 
-class GPT52Thinking(OpenAIThinking):
-    def __init__(self, decoding=None, thinking=True):
-        super().__init__("gpt-5.2-thinking", "gpt-5.2-thinking", decoding or Decoding(), thinking)
-
-    @classmethod
-    def with_thinking(cls, decoding=None):
-        return cls(decoding=decoding, thinking=True)
-    
-    @classmethod
-    def without_thinking(cls, decoding=None):
-        return cls(decoding=decoding, thinking=False)
-    
+class GPT52Thinking(OpenAIModel):
+    def __init__(self, sampling_params=None):
+        super().__init__("gpt-5.2-thinking", "gpt-5.2-thinking", sampling_params or OpenAIParams(thinking=True))

@@ -3,10 +3,20 @@ from typing import Optional, List
 import yaml
 
 from . import REGISTRY
-from .base import BaseModel, Decoding
+from .base import BaseModel
 from .base_openai import OpenAIModel
 from .base_ollama import OllamaModel
 from .base_hf import HFChatModel
+from .sampling import SamplingParams, OpenAIParams, OllamaParams, HuggingFaceParams, ClaudeParams
+
+
+BACKEND_PARAMS = {
+    "openai": OpenAIParams,
+    "ollama": OllamaParams,
+    "hf": HuggingFaceParams,
+    "claude": ClaudeParams,
+
+}
 
 
 def load_models_from_yaml(cfg_path: Path, select_names: Optional[List[str]] = None) -> List[BaseModel]:
@@ -19,21 +29,22 @@ def load_models_from_yaml(cfg_path: Path, select_names: Optional[List[str]] = No
         if select_names and name not in select_names:
             continue
 
-        decoding_cfg = m.get("decoding") or {}
-        decoding = decoding_cfg if isinstance(decoding_cfg, Decoding) else Decoding(**decoding_cfg)
+        backend = m.get("backend")
+        sampling_cfg = m.get("sampling_params") or {}
+        params_cls = BACKEND_PARAMS.get(backend, SamplingParams)
+        sampling_params = sampling_cfg if isinstance(sampling_cfg, SamplingParams) else params_cls(**sampling_cfg)
 
-        # 1) Apply registered models:
+        # 1) Apply registered models
         if name in REGISTRY:
             cls = REGISTRY[name]
-
             kwargs = {}
             for k in ("model_id", "endpoint", "tgt_lang", "host", "stop"):
                 if k in m:
                     kwargs[k] = m[k]
             try:
-                model = cls(decoding=decoding, **kwargs)
+                model = cls(sampling_params=sampling_params, **kwargs)
             except TypeError:
-                model = cls(decoding=decoding)
+                model = cls(sampling_params=sampling_params)
                 for k, v in kwargs.items():
                     setattr(model, k, v)
 
@@ -46,26 +57,19 @@ def load_models_from_yaml(cfg_path: Path, select_names: Optional[List[str]] = No
             continue
 
         # 2) Does not exist in REGISTRY
-        backend = m.get("backend")
         model_id = m.get("model_id")
 
         if backend == "openai":
-            model = OpenAIModel(name=name, model_id=model_id, decoding=decoding)
+            model = OpenAIModel(name=name, model_id=model_id, sampling_params=sampling_params)
 
         elif backend == "ollama":
-            host = m.get("host")
-            model = OllamaModel(name=name, model_id=model_id, decoding=decoding, host=host)
+            model = OllamaModel(name=name, model_id=model_id, sampling_params=sampling_params, host=m.get("host"))
 
         elif backend == "hf":
             endpoint = m.get("endpoint")
             if not endpoint:
                 raise ValueError(f"[{name}] backend=hf requires 'endpoint'")
-            model = HFChatModel(
-                name=name,
-                model_id=model_id,
-                decoding=decoding,
-                endpoint=endpoint,
-            )
+            model = HFChatModel(name=name, model_id=model_id, sampling_params=sampling_params, endpoint=endpoint)
 
         else:
             raise ValueError(f"Unknown backend: {backend} (model: {name})")

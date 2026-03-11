@@ -1,6 +1,6 @@
-from tools import get_keys, extract_token_usage
-from base import BaseModel
-from sampling import OpenAIParams
+from .tools import get_keys, extract_token_usage
+from .base import BaseModel
+from .sampling import OpenAIParams
 
 from openai import OpenAI
 
@@ -10,7 +10,7 @@ class OpenAIModel(BaseModel):
                  model_id: str, 
                  sampling_params: OpenAIParams | dict | None = None
                  ):
-        super().__init__(name, model_id, sampling_params)
+        super().__init__(name, model_id, sampling_params or OpenAIParams())
         keys = get_keys("OPENAI_API_KEYS")
         self.client = OpenAI(api_key=keys[0])
 

@@ -1,6 +1,6 @@
-from base import BaseModel
-from sampling import OllamaParams
-from tools import extract_token_usage
+from .base import BaseModel
+from .sampling import OllamaParams
+from .tools import extract_token_usage
 
 import os
 import requests
@@ -8,7 +8,7 @@ import requests
     
 class OllamaModel(BaseModel):
     def __init__(self, name: str, model_id: str, sampling_params: OllamaParams | dict | None = None, host: str | None = None):
-        super().__init__(name, model_id, sampling_params)
+        super().__init__(name, model_id, sampling_params or OllamaParams())
         self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.chat_url = f"{self.host}/api/chat"
         self.gen_url  = f"{self.host}/api/generate"

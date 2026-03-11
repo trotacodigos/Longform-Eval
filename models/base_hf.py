@@ -1,6 +1,6 @@
-from base import BaseModel
-from sampling import HuggingFaceParams
-from tools import extract_token_usage
+from .base import BaseModel
+from .sampling import HuggingFaceParams
+from .tools import extract_token_usage
 
 import requests
 
@@ -15,7 +15,7 @@ class HFChatModel(BaseModel):
         prompt_adapter=None,
         tgt_lang: str | None = None,
     ):
-        super().__init__(name, model_id, sampling_params)
+        super().__init__(name, model_id, sampling_params or HuggingFaceParams())
         if not endpoint:
             raise ValueError("HFChatModel requires `endpoint`")
         self.endpoint = endpoint

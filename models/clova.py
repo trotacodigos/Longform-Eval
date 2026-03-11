@@ -1,44 +1,32 @@
-from .base import Decoding
+from openai import OpenAI
+
 from .base_hf import HFChatModel
+from .sampling import ClovaParams
 from .tools import extract_token_usage
-import requests
+
 
 class ClovaModel(HFChatModel):
-    def __init__(self, name="clova", model_id="naver/HyperCLOVAX-SEED-Think-32B", endpoint=None, decoding: Decoding | dict | None = None, thinking: bool = True):
-        super().__init__(name, model_id, endpoint, decoding)
-        self.thinking = thinking
+    def __init__(self, name="clova", 
+                 model_id="naver/HyperCLOVAX-SEED-Think-32B", 
+                 endpoint="http://localhost:8000/v1", 
+                 sampling_params: ClovaParams | dict | None = None):
+        super().__init__(name, model_id, endpoint, sampling_params or ClovaParams())
+        self.client = OpenAI(base_url=self.endpoint, api_key="not-needed")
 
     def _call(self, system: str, user: str):
-        # 1. 페이로드 구조 직접 제어
-        payload = {
-            "model": self.model_id,
-            "messages": [
+        resp = self.client.chat.completions.create(
+            model=self.model_id,
+            messages=[
                 {"role": "system", "content": system},
-                {"role": "user", "content": user}
+                {"role": "user", "content": user},
             ],
-            "max_tokens": self.decoding.max_tokens,
-            "top_p": self.decoding.top_p,
-        }
-
-        # 2. 파라미터 충돌 방지
-        if self.thinking:
-            payload["thinking"] = True 
-        else:
-            payload["temperature"] = self.decoding.temperature
-
-        # 3. 실시간 체크를 위한 의도적 에러 발생
-        if not self.endpoint:
-            raise ValueError("[Ready] Clova 모델 구조 세팅 완료. 통신을 위한 endpoint 주소가 필요합니다.")
-
-        # 4. 서버 통신 및 응답 처리
-        response = requests.post(self.endpoint, json=payload, timeout=600)
-        response.raise_for_status()
-        
-        data = response.json()
-        content = data["choices"][0]["message"]["content"]
+            **self.sampling_params.to_kwargs(),
+        )
+        content = resp.choices[0].message.content
+        if "</think>" in content:
+            content = content.split("</think>")[-1]
         text = (content or "").strip()
 
-        usage = data.get("usage", {})
+        usage = getattr(resp, "usage", None)
         in_token, out_token = extract_token_usage(usage)
-
         return text, in_token, out_token
