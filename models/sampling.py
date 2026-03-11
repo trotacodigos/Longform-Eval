@@ -68,7 +68,7 @@ class OllamaParams(SamplingParams):
         return kwargs
     
 @dataclass
-class ClovaParams(ThinkingMixin, HuggingFaceParams):
+class HyperClovaXParams(ThinkingMixin, HuggingFaceParams):
     thinking: bool = False
     thinking_token_budget: int = 4000 # up to 8000
 

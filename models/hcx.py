@@ -1,16 +1,16 @@
 from openai import OpenAI
 
 from .base_hf import HFChatModel
-from .sampling import ClovaParams
+from .sampling import HyperClovaXParams
 from .tools import extract_token_usage
 
 
-class ClovaModel(HFChatModel):
+class HyperClovaXModel(HFChatModel):
     def __init__(self, name="hcx-seed-thinking-32b", 
                  model_id="naver/HyperCLOVAX-SEED-Think-32B", 
                  endpoint="http://localhost:8000/v1", 
-                 sampling_params: ClovaParams | dict | None = None):
-        super().__init__(name, model_id, endpoint, sampling_params or ClovaParams())
+                 sampling_params: HyperClovaXParams | dict | None = None):
+        super().__init__(name, model_id, endpoint, sampling_params or HyperClovaXParams())
         self.client = OpenAI(base_url=self.endpoint, api_key="not-needed")
 
     def _call(self, system: str, user: str):
