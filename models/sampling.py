@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Any
 class SamplingParams:
     temperature: float = 0.2
     top_p: float = 0.9
+    top_k: float = 0.7
     max_tokens: int = 8_192
     stop: Optional[List[str]] = None
 
@@ -85,3 +86,8 @@ class HyperClovaXParams(ThinkingMixin, HuggingFaceParams):
                 "chat_template_kwargs": {"thinking": False}
             }
         return kwargs
+    
+
+
+
+
