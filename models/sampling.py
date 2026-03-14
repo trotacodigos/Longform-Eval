@@ -35,8 +35,6 @@ class ThinkingMixin:
 class OpenAIParams(ThinkingMixin, SamplingParams):
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
-    max_tokens: int = 16_384
-
 
 @dataclass
 class ClaudeParams(SamplingParams):
@@ -87,7 +85,16 @@ class HyperClovaXParams(ThinkingMixin, HuggingFaceParams):
             }
         return kwargs
     
+@dataclass
+class QwenParams(ThinkingMixin, HuggingFaceParams):
+    min_p: float = 0.0
+    presence_penalty: float = 1.5
 
-
+    def to_kwargs(self):
+        kwargs = super().to_kwargs()
+        if self.thinking:
+            kwargs["temperature"] = 1.0
+            kwargs["top_p"] = 0.95
+        return kwargs
 
 
