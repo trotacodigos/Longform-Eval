@@ -123,3 +123,19 @@ class GeminiParams(ThinkingMixin, SamplingParams):
             kwargs["thinking_budget"] = -1
         else:
             kwargs["thinking_budget"] = 0
+
+@dataclass
+class GrokParams(ThinkingMixin, OpenAIChatParams):
+    """
+    thinking=True  → Add reasoning_effort to the payload
+    thinking=False → Remove reasoning_effort (non-reasoning mode)
+    """
+    reasoning_effort: str = "high"  # "low" | "medium" | "high"
+
+    def to_kwargs(self) -> Dict[str, Any]:
+        kwargs = OpenAIChatParams.to_kwargs(self)
+        kwargs.pop("thinking", None)
+        kwargs.pop("reasoning_effort", None)
+        if self.thinking:
+            kwargs["reasoning_effort"] = self.reasoning_effort
+        return kwargs
