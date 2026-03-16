@@ -9,9 +9,9 @@ class LGExaoneModel(OpenAIChatModel):
                  endpoint: str = "http://localhost:8000/v1/chat/completions",
                  sampling_params: ExaoneParams | dict | None = None,
                  strip_thinking: bool = False,
-                 merge_system_prompt = True):
+                ):
            super().__init__(name, model_id, endpoint, sampling_params or ExaoneParams(), 
-                             strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
+                             strip_thinking=strip_thinking, merge_system_prompt=True)
 
     def _extra_payload(self) -> dict:
         return {} if self.sampling_params.thinking \

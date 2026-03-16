@@ -49,7 +49,6 @@ class Qwen3MTModel(OpenAIChatModel):
         tgt_lang: str = "Korean",
         sampling_params: OpenAIChatParams | dict | None = None,
         strip_thinking = False,
-        merge_system_prompt = True,
         # Optional params to enhance translation quality
         terms: list[dict] | None = None,       # [{"source": "...", "target": "..."}]
         tm_list: list[dict] | None = None,     # [{"source": "...", "target": "..."}]
@@ -57,7 +56,7 @@ class Qwen3MTModel(OpenAIChatModel):
     ):
         # Do not require sampling_params
         super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), 
-                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
+                         strip_thinking=strip_thinking, merge_system_prompt=True)
         self.api_keys = get_keys("ALIBABA_API_KEYS") # Alibaba Cloud DashScope API key
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang

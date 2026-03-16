@@ -35,8 +35,8 @@ class HunyuanMTModel(OpenAIChatModel):
                  src_lang: str = "en", # TODO
                  tgt_lang: str = "ko",
                  strip_thinking = False,
-                 merge_system_prompt: bool = True):
+                 ):
         super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), 
-                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
+                         strip_thinking=strip_thinking, merge_system_prompt=True)
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
