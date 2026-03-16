@@ -101,3 +101,6 @@ class ExaoneParams(ThinkingMixin, OpenAIChatParams):
     pass
 
 
+@dataclass
+class TowerPlusParams(OpenAIChatParams):
+    best_of: int = 1
