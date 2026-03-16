@@ -44,6 +44,7 @@ class OpenAIChatModel(BaseModel):
         prompt_adapter=None,
         tgt_lang: str | None = None,
         strip_thinking: bool = False,
+        merge_system_prompt: bool = False,
     ):
         super().__init__(name, model_id, sampling_params or OpenAIChatParams())
         if not endpoint:
@@ -52,22 +53,25 @@ class OpenAIChatModel(BaseModel):
         self.prompt_adapter = prompt_adapter
         self.tgt_lang = tgt_lang
         self.strip_thinking = strip_thinking
+        self.merge_system_prompt = merge_system_prompt
 
     def _call(self, system: str | None, user: str):
         """MAIN"""
         if self.prompt_adapter:
             user = self.prompt_adapter(user, self.tgt_lang) if self.tgt_lang else self.prompt_adapter(user)
 
-        if system is None:
-            message = [{"role": "user", "content": user}]
+        if self.merge_system_prompt:
+            merged = f"{system}\n{user}" if system else user
+            messages = [{"role": "user", "content": merged}]
         else:
-            message = [
+            messages = [{"role": "user", "content": user}] if system is None else [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
-                ]
+            ]
+
         payload = {
             "model": self.model_id,
-            "messages": message,
+            "messages": messages,
             **self.sampling_params.to_kwargs(),
             **self._extra_payload(),            
         }

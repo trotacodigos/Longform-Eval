@@ -34,11 +34,9 @@ class HunyuanMTModel(OpenAIChatModel):
                  sampling_params: OpenAIChatParams | dict | None = None,
                  src_lang: str = "en", # TODO
                  tgt_lang: str = "ko",
-                 strip_thinking = False):
-        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), strip_thinking=strip_thinking)
+                 strip_thinking = False,
+                 merge_system_prompt: bool = True):
+        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), 
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
-
-    def _call(self, system: str, user: str):
-        merged = f"{system}\n{user}" if system else user
-        return super()._call(None, merged)

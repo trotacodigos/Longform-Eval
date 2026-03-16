@@ -10,8 +10,10 @@ class Qwen3_5Model(OpenAIChatModel):
                  model_id="Qwen/Qwen3.5-27B", 
                  endpoint="http://localhost:8000/v1/chat/completions", 
                  sampling_params: QwenParams | dict | None = None,
-                 strip_thinking = False):
-        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(), strip_thinking=strip_thinking)
+                 strip_thinking = False,
+                 merge_system_prompt: bool = False):
+        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(), 
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
 
     def _extra_payload(self):
         return {} if self.sampling_params.thinking \
@@ -27,9 +29,11 @@ class Qwen3Thinking(Qwen3_5Model):
         model_id="Qwen/Qwen3-235B-A22B-Thinking-2507",
         endpoint="http://localhost:8000/v1/chat/completions",
         sampling_params: QwenParams | dict | None = None,
-        strip_thinking = True
+        strip_thinking = True,
+        merge_system_prompt: bool = False
     ):
-        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(thinking=True), strip_thinking=strip_thinking)
+        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(thinking=True), 
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
 
     def _extra_payload(self):
         return {} # To remove `thinking`
@@ -45,26 +49,23 @@ class Qwen3MTModel(OpenAIChatModel):
         tgt_lang: str = "Korean",
         sampling_params: OpenAIChatParams | dict | None = None,
         strip_thinking = False,
+        merge_system_prompt = True,
         # Optional params to enhance translation quality
         terms: list[dict] | None = None,       # [{"source": "...", "target": "..."}]
         tm_list: list[dict] | None = None,     # [{"source": "...", "target": "..."}]
         domains: str | None = None,            # domain prompt (english-only)
     ):
         # Do not require sampling_params
-        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), strip_thinking=strip_thinking)
+        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), 
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
         self.api_keys = get_keys("ALIBABA_API_KEYS") # Alibaba Cloud DashScope API key
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
         self.terms = terms
         self.tm_list = tm_list
         self.domains = domains
-
-    def _call(self, system: str, user: str):
-        merged = f"{system}\n{user}" if system else user
-        return super()._call(None, merged)
     
     def _extra_payload(self):
-        # Do not support system message
         translation_options: dict = {
             "source_lang": self.src_lang,
             "target_lang": self.tgt_lang,

@@ -68,8 +68,7 @@ class OllamaParams(SamplingParams):
     
 @dataclass
 class HyperClovaXParams(ThinkingMixin, OpenAIChatParams):
-    thinking: bool = False
-    thinking_token_budget: int = 4000 # up to 8000
+    thinking_token_budget: int = 4000
 
     def to_kwargs(self) -> Dict[str, Any]:
         kwargs = super().to_kwargs()
