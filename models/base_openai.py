@@ -6,6 +6,7 @@ from openai import OpenAI
 import requests
 
 class OpenAIModel(BaseModel):
+    """SDK-based"""
     def __init__(self, name: str, 
                  model_id: str, 
                  sampling_params: OpenAIParams | dict | None = None
@@ -33,6 +34,7 @@ class OpenAIModel(BaseModel):
     
 
 class OpenAIChatModel(BaseModel):
+    """requests-based"""
     def __init__(
         self,
         name: str,

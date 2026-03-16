@@ -1,6 +1,6 @@
 # Tencent
-from .base_hf import HFChatModel
-from .sampling import HuggingFaceParams
+from .base_openai import HFChatModel
+from .sampling import OpenAIChatParams
 
 
 class HunyuanMTModel(HFChatModel):
@@ -31,11 +31,11 @@ class HunyuanMTModel(HFChatModel):
                  name="hunyuan-mt-7b",
                  model_id="tencent/Hunyuan-MT-7B",
                  endpoint="http://localhost:8000/v1/chat/completions",
-                 sampling_params: HuggingFaceParams | dict | None = None,
+                 sampling_params: OpenAIChatParams | dict | None = None,
                  src_lang: str = "en", # TODO
                  tgt_lang: str = "ko",
                  strip_thinking = False):
-        super().__init__(name, model_id, endpoint, sampling_params or HuggingFaceParams(), strip_thinking=strip_thinking)
+        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), strip_thinking=strip_thinking)
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
 

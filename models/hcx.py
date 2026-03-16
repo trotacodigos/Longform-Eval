@@ -1,7 +1,7 @@
 # https://huggingface.co/naver-hyperclovax/HyperCLOVAX-SEED-Think-32B
 from openai import OpenAI
 
-from .base_hf import HFChatModel
+from .base_openai import HFChatModel
 from .sampling import HyperClovaXParams
 
 

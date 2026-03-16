@@ -1,6 +1,6 @@
 from .base_openai import OpenAIChatModel
-from .sampling import QwenParams
-from .tools import extract_token_usage, get_keys
+from .sampling import QwenParams, OpenAIChatParams
+from .tools import get_keys
 
 
 class Qwen3_5Model(OpenAIChatModel):
@@ -36,7 +36,6 @@ class Qwen3Thinking(Qwen3_5Model):
     
 
 class Qwen3MTModel(OpenAIChatModel):
-
     def __init__(
         self,
         name: str = "qwen-mt-plus",
@@ -44,6 +43,7 @@ class Qwen3MTModel(OpenAIChatModel):
         endpoint: str = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
         src_lang: str = "auto",
         tgt_lang: str = "Korean",
+        sampling_params: OpenAIChatParams | dict | None = None,
         strip_thinking = False,
         # Optional params to enhance translation quality
         terms: list[dict] | None = None,       # [{"source": "...", "target": "..."}]
@@ -51,7 +51,7 @@ class Qwen3MTModel(OpenAIChatModel):
         domains: str | None = None,            # domain prompt (english-only)
     ):
         # Do not require sampling_params
-        super().__init__(name, model_id, endpoint, sampling_params=None, strip_thinking=strip_thinking)
+        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), strip_thinking=strip_thinking)
         self.api_keys = get_keys("ALIBABA_API_KEYS") # Alibaba Cloud DashScope API key
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
