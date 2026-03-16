@@ -26,7 +26,7 @@ class OpenAIModel(BaseModel):
         content = resp.choices[0].message.content
         text = (content or "").strip()
 
-        usage = getattr(resp, "usage", None)
+        usage = getattr(resp, "usage", {})
         in_token, out_token = extract_token_usage(usage)
 
         return text, in_token, out_token

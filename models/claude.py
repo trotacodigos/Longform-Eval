@@ -21,7 +21,7 @@ class AnthropicModel(BaseModel):
             **self.sampling_params.to_kwargs(),
         )
         text = (resp.content[0].text or "").strip() if resp.content else ""
-        usage = getattr(resp, "usage", None)
+        usage = getattr(resp, "usage", {})
         in_token, out_token = extract_token_usage(usage)
         return text, in_token, out_token
     

@@ -1,7 +1,7 @@
 from .base_hf import HFChatModel
 from .base import BaseModel
 from .sampling import QwenParams
-from .tools import extract_token_usage
+from .tools import extract_token_usage, get_keys
 
 import requests
 
@@ -19,34 +19,32 @@ class Qwen3_5Model(HFChatModel):
         sampling_kwargs = self.sampling_params.to_kwargs()
         thinking = sampling_kwargs.pop("thinking", False)
 
-        payload = self.client.chat.completions.create(
-            model=self.model_id,
-            messages=[
-                {"role": "user", "content": system},
-                {"role": "user", "content": user},
-            ],
-            **sampling_kwargs,
-            **(
-                {} if thinking
-                else {"chat_template_kwargs": {"enable_thinking": False}}
-            )
-        )
+        payload = {
+        "model": self.model_id,
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        **sampling_kwargs,
+        **(
+            {}
+            if thinking
+            else {"chat_template_kwargs": {"enable_thinking": False}}
+        ),
+    }
         response = requests.post(self.endpoint, json=payload, timeout=600)
         response.raise_for_status()
         data = response.json()
 
         content = data["choices"][0]["message"]["content"] or ""
 
-        # <think>...</think> 블록 제거 (thinking=True일 때 포함됨)
         if "</think>" in content:
             content = content.split("</think>", 1)[-1]
 
-        text = content.strip()
-
-        usage = data.get("usage", "")
+        usage = data.get("usage", {})
         in_token, out_token = extract_token_usage(usage)
 
-        return text, in_token, out_token
+        return content.strip(), in_token, out_token
 
 
 class Qwen3Thinking(Qwen3_5Model):
@@ -66,7 +64,7 @@ class Qwen3Thinking(Qwen3_5Model):
 
     def _call(self, system: str, user: str):
         sampling_kwargs = self.sampling_params.to_kwargs()
-        sampling_kwargs.pop("thinking", None)  # 불필요한 키 제거
+        sampling_kwargs.pop("thinking", None) # Remove unnecessary keys
 
         payload = {
             "model": self.model_id,
@@ -82,41 +80,33 @@ class Qwen3Thinking(Qwen3_5Model):
         data = response.json()
 
         content = data["choices"][0]["message"]["content"] or ""
-
-        if "<think>" in content:
-            content = content.split("<think>", 1)[-1]
         if "</think>" in content:
             content = content.split("</think>", 1)[-1]
 
-        text = content.strip()
-
-        usage = data.get("usage", "")
+        usage = data.get("usage", {})
         in_token, out_token = extract_token_usage(usage)
 
-        return text, in_token, out_token
+        return content.strip(), in_token, out_token
     
 
 class Qwen3MTModel(BaseModel):
-    # DashScopeAPI 전용
+    # via DashScopeAPI
     ENDPOINT = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions"
 
     def __init__(
         self,
         name: str = "qwen-mt-plus",
         model_id: str = "qwen-mt-plus",
-        api_key: str | None = None, # Alibaba Cloud DashScope API key
         src_lang: str = "auto",
         tgt_lang: str = "Korean",
-        # 번역 품질 향상 옵션 (선택)
+        # Optional params to enhance translation quality
         terms: list[dict] | None = None,       # [{"source": "...", "target": "..."}]
         tm_list: list[dict] | None = None,     # [{"source": "...", "target": "..."}]
-        domains: str | None = None,            # 도메인 프롬프트 (영어만 지원)
+        domains: str | None = None,            # domain prompt (english-only)
     ):
-        # MT 모델은 sampling_params 불필요
+        # Do not require sampling_params
         super().__init__(name, model_id, sampling_params=None)
-        if not api_key:
-            raise ValueError("QwenMTModel requires a DashScope `api_key`")
-        self.api_key = api_key
+        self.api_keys = get_keys("ALIBABA_API_KEYS") # Alibaba Cloud DashScope API key
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
         self.terms = terms
@@ -124,9 +114,7 @@ class Qwen3MTModel(BaseModel):
         self.domains = domains
 
     def _call(self, system: str, user: str):
-        # system 메시지 미지원 — user에 번역 대상 텍스트만 전달
-        # (system 인자는 인터페이스 호환을 위해 받되 무시)
-
+        # Do not support system message
         translation_options: dict = {
             "source_lang": self.src_lang,
             "target_lang": self.tgt_lang,
@@ -141,14 +129,14 @@ class Qwen3MTModel(BaseModel):
         payload = {
             "model": self.model_id,
             "messages": [{"role": "user", "content": user}],
-            "extra_body": {"translation_options": translation_options},
+            "translation_options": translation_options,
         }
 
         response = requests.post(
             self.ENDPOINT,
             json=payload,
             headers={
-                "Authorization": f"Bearer {self.api_key}",
+                "Authorization": f"Bearer {self.api_keys[0]}",
                 "Content-Type": "application/json",
             },
             timeout=600,
@@ -158,7 +146,7 @@ class Qwen3MTModel(BaseModel):
 
         text = (data["choices"][0]["message"]["content"] or "").strip()
 
-        usage = data.get("usage", "")
+        usage = data.get("usage", {})
         in_token, out_token = extract_token_usage(usage)
 
         return text, in_token, out_token

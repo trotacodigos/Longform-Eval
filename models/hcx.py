@@ -29,6 +29,6 @@ class HyperClovaXModel(HFChatModel):
             content = content.split("</think>")[-1]
         text = (content or "").strip()
 
-        usage = getattr(resp, "usage", None)
+        usage = getattr(resp, "usage", {})
         in_token, out_token = extract_token_usage(usage)
         return text, in_token, out_token

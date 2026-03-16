@@ -41,7 +41,7 @@ class HFChatModel(BaseModel):
         content = data["choices"][0]["message"]["content"]
         text = (content or "").strip()
 
-        usage = data.get("usage", "")
+        usage = data.get("usage", {})
         in_token, out_token = extract_token_usage(usage)
 
         return text, in_token, out_token
