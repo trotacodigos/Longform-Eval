@@ -111,3 +111,15 @@ class DeepseekParams(ThinkingMixin, OpenAIChatParams):
         if self.thinking:
             kwargs["temperature"] = 1.0
         return kwargs
+    
+@dataclass
+class GeminiParams(ThinkingMixin, SamplingParams):
+    
+    def to_kwargs(self):
+        kwargs = super().to_kwargs()
+        kwargs.pop("thinking", None)
+        if self.thinking:
+            kwargs["temperature"] = 1.0
+            kwargs["thinking_budget"] = -1
+        else:
+            kwargs["thinking_budget"] = 0
