@@ -100,7 +100,14 @@ class QwenParams(ThinkingMixin, OpenAIChatParams):
 class ExaoneParams(ThinkingMixin, OpenAIChatParams):
     pass
 
-
 @dataclass
 class TowerPlusParams(OpenAIChatParams):
     best_of: int = 1
+
+@dataclass
+class DeepseekParams(ThinkingMixin, OpenAIChatParams):
+    def to_kwargs(self):
+        kwargs = super().to_kwargs()
+        if self.thinking:
+            kwargs["temperature"] = 1.0
+        return kwargs
