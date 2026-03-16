@@ -2,6 +2,5 @@ from .sampling import HuggingFaceParams
 from .base_hf import HFChatModel
 
 class SolarOpenModel(HFChatModel):
-    def __init__(self, name, model_id, endpoint, sampling_params: HuggingFaceParams | dict | None = None):
+    def __init__(self, name="solar-open-100b", model_id="upstage/Solar-Open-100B", endpoint, sampling_params: HuggingFaceParams | dict | None = None):
         super().__init__(name, model_id, endpoint, sampling_params)
-        

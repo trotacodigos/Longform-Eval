@@ -1,9 +1,6 @@
 # Tencent
 from .base_hf import HFChatModel
 from .sampling import HuggingFaceParams
-from .tools import extract_token_usage
-
-import requests
 
 
 class HunyuanMTModel(HFChatModel):
@@ -35,30 +32,13 @@ class HunyuanMTModel(HFChatModel):
                  model_id="tencent/Hunyuan-MT-7B",
                  endpoint="http://localhost:8000/v1/chat/completions",
                  sampling_params: HuggingFaceParams | dict | None = None,
-                 src_lang: str = "en",
-                 tgt_lang: str = "ko"):
-        super().__init__(name, model_id, endpoint, sampling_params or HuggingFaceParams())
+                 src_lang: str = "en", # TODO
+                 tgt_lang: str = "ko",
+                 strip_thinking = False):
+        super().__init__(name, model_id, endpoint, sampling_params or HuggingFaceParams(), strip_thinking=strip_thinking)
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
-    
+
     def _call(self, system: str, user: str):
-        payload = self.client.chat.completions.create(
-            model=self.model_id,
-            # The model doesn't receive system prompt
-            messages=[
-                {"role": "user", "content": system + "\n" + user},
-            ],
-            add_generation_prompt=False,
-            **self.sampling_params.to_kwargs(),
-        )
-        
-        response = requests.post(self.endpoint, json=payload, timeout=600)
-        response.raise_for_status()
-        data = response.json()
-
-        content = data["choices"][0]["message"]["content"]
-        text = (content or "").strip()
-
-        usage = data.get("usage", {})
-        in_token, out_token = extract_token_usage(usage)
-        return text, in_token, out_token
+        merged = f"{system}\n{user}" if system else user
+        return super()._call(None, merged)

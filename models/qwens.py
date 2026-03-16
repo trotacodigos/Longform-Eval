@@ -1,50 +1,21 @@
-from .base_hf import HFChatModel
-from .base import BaseModel
+from .base_openai import OpenAIChatModel
 from .sampling import QwenParams
 from .tools import extract_token_usage, get_keys
 
-import requests
 
-
-class Qwen3_5Model(HFChatModel):
+class Qwen3_5Model(OpenAIChatModel):
     # https://huggingface.co/Qwen/Qwen3.5-27B
     def __init__(self, 
                  name="qwen3.5-27b", 
                  model_id="Qwen/Qwen3.5-27B", 
                  endpoint="http://localhost:8000/v1/chat/completions", 
-                 sampling_params: QwenParams | dict | None = None,):
-        super().__init__(name, model_id, endpoint, sampling_params)
+                 sampling_params: QwenParams | dict | None = None,
+                 strip_thinking = False):
+        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(), strip_thinking=strip_thinking)
 
-    def _call(self, system: str, user: str):
-        sampling_kwargs = self.sampling_params.to_kwargs()
-        thinking = sampling_kwargs.pop("thinking", False)
-
-        payload = {
-        "model": self.model_id,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        **sampling_kwargs,
-        **(
-            {}
-            if thinking
+    def _extra_payload(self):
+        return {} if self.sampling_params.thinking \
             else {"chat_template_kwargs": {"enable_thinking": False}}
-        ),
-    }
-        response = requests.post(self.endpoint, json=payload, timeout=600)
-        response.raise_for_status()
-        data = response.json()
-
-        content = data["choices"][0]["message"]["content"] or ""
-
-        if "</think>" in content:
-            content = content.split("</think>", 1)[-1]
-
-        usage = data.get("usage", {})
-        in_token, out_token = extract_token_usage(usage)
-
-        return content.strip(), in_token, out_token
 
 
 class Qwen3Thinking(Qwen3_5Model):
@@ -56,56 +27,31 @@ class Qwen3Thinking(Qwen3_5Model):
         model_id="Qwen/Qwen3-235B-A22B-Thinking-2507",
         endpoint="http://localhost:8000/v1/chat/completions",
         sampling_params: QwenParams | dict | None = None,
+        strip_thinking = True
     ):
-        super().__init__(
-            name, model_id, endpoint,
-            sampling_params or QwenParams(thinking=True),
-        )
+        super().__init__(name, model_id, endpoint, sampling_params or QwenParams(thinking=True), strip_thinking=strip_thinking)
 
-    def _call(self, system: str, user: str):
-        sampling_kwargs = self.sampling_params.to_kwargs()
-        sampling_kwargs.pop("thinking", None) # Remove unnecessary keys
-
-        payload = {
-            "model": self.model_id,
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            **sampling_kwargs,
-        }
-
-        response = requests.post(self.endpoint, json=payload, timeout=600)
-        response.raise_for_status()
-        data = response.json()
-
-        content = data["choices"][0]["message"]["content"] or ""
-        if "</think>" in content:
-            content = content.split("</think>", 1)[-1]
-
-        usage = data.get("usage", {})
-        in_token, out_token = extract_token_usage(usage)
-
-        return content.strip(), in_token, out_token
+    def _extra_payload(self):
+        return {} # To remove `thinking`
     
 
-class Qwen3MTModel(BaseModel):
-    # via DashScopeAPI
-    ENDPOINT = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions"
+class Qwen3MTModel(OpenAIChatModel):
 
     def __init__(
         self,
         name: str = "qwen-mt-plus",
         model_id: str = "qwen-mt-plus",
+        endpoint: str = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
         src_lang: str = "auto",
         tgt_lang: str = "Korean",
+        strip_thinking = False,
         # Optional params to enhance translation quality
         terms: list[dict] | None = None,       # [{"source": "...", "target": "..."}]
         tm_list: list[dict] | None = None,     # [{"source": "...", "target": "..."}]
         domains: str | None = None,            # domain prompt (english-only)
     ):
         # Do not require sampling_params
-        super().__init__(name, model_id, sampling_params=None)
+        super().__init__(name, model_id, endpoint, sampling_params=None, strip_thinking=strip_thinking)
         self.api_keys = get_keys("ALIBABA_API_KEYS") # Alibaba Cloud DashScope API key
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
@@ -114,6 +60,10 @@ class Qwen3MTModel(BaseModel):
         self.domains = domains
 
     def _call(self, system: str, user: str):
+        merged = f"{system}\n{user}" if system else user
+        return super()._call(None, merged)
+    
+    def _extra_payload(self):
         # Do not support system message
         translation_options: dict = {
             "source_lang": self.src_lang,
@@ -126,27 +76,10 @@ class Qwen3MTModel(BaseModel):
         if self.domains:
             translation_options["domains"] = self.domains
 
-        payload = {
-            "model": self.model_id,
-            "messages": [{"role": "user", "content": user}],
-            "translation_options": translation_options,
-        }
-
-        response = requests.post(
-            self.ENDPOINT,
-            json=payload,
-            headers={
-                "Authorization": f"Bearer {self.api_keys[0]}",
-                "Content-Type": "application/json",
-            },
-            timeout=600,
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        text = (data["choices"][0]["message"]["content"] or "").strip()
-
-        usage = data.get("usage", {})
-        in_token, out_token = extract_token_usage(usage)
-
-        return text, in_token, out_token
+        return {"translation_options": translation_options}
+    
+    def _headers(self):
+        return {
+            "Authorization": f"Bearer {self.api_keys[0]}",
+            "Content-Type": "application/json",
+            }

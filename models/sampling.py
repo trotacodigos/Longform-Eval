@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict
 from typing import Optional, List, Dict, Any
 
 
@@ -45,7 +45,7 @@ class ClaudeParams(SamplingParams):
         return kwargs
 
 @dataclass
-class HuggingFaceParams(SamplingParams):
+class OpenAIChatParams(SamplingParams):
     repetition_penalty: Optional[float] = None
     
     def to_kwargs(self):
@@ -67,7 +67,7 @@ class OllamaParams(SamplingParams):
         return kwargs
     
 @dataclass
-class HyperClovaXParams(ThinkingMixin, HuggingFaceParams):
+class HyperClovaXParams(ThinkingMixin, OpenAIChatParams):
     thinking: bool = False
     thinking_token_budget: int = 4000 # up to 8000
 
@@ -86,7 +86,7 @@ class HyperClovaXParams(ThinkingMixin, HuggingFaceParams):
         return kwargs
     
 @dataclass
-class QwenParams(ThinkingMixin, HuggingFaceParams):
+class QwenParams(ThinkingMixin, OpenAIChatParams):
     min_p: float = 0.0
     presence_penalty: float = 1.5
 

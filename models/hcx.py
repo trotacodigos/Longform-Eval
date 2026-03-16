@@ -3,7 +3,6 @@ from openai import OpenAI
 
 from .base_hf import HFChatModel
 from .sampling import HyperClovaXParams
-from .tools import extract_token_usage
 
 
 class HyperClovaXModel(HFChatModel):
