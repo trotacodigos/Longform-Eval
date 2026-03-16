@@ -1,9 +1,9 @@
 # Tencent
-from .base_openai import HFChatModel
+from .base_openai import OpenAIChatModel
 from .sampling import OpenAIChatParams
 
 
-class HunyuanMTModel(HFChatModel):
+class HunyuanMTModel(OpenAIChatModel):
     """
     Hunyuan-MT-7B wrapper.
     - No system prompt (model card: "does not have the default system_prompt")

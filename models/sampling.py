@@ -97,4 +97,8 @@ class QwenParams(ThinkingMixin, OpenAIChatParams):
             kwargs["top_p"] = 0.95
         return kwargs
 
+@dataclass
+class ExaoneParams(ThinkingMixin, OpenAIChatParams):
+    pass
+
 
