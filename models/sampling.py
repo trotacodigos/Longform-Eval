@@ -4,8 +4,8 @@ from typing import Optional, List, Dict, Any
 
 @dataclass
 class SamplingParams:
-    temperature: float = 0.2
-    top_p: float = 0.9
+    temperature: float = 1.0
+    top_p: float = 0.95
     top_k: float = 0.7
     max_tokens: int = 8_192
     stop: Optional[List[str]] = None
