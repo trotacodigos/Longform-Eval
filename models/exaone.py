@@ -18,7 +18,7 @@ class LGExaoneModel(OpenAIChatModel):
             else {"chat_template_kwargs": {"enable_thinking": False}}
     
 
-class K_ExaoneModel(OpenAIChatModel):
+class K_ExaoneModel(LGExaoneModel):
      # https://huggingface.co/LGAI-EXAONE/K-EXAONE-236B-A23B
     def __init__(self,
                  name: str = "k-exaone-236b-a23b",
@@ -28,9 +28,6 @@ class K_ExaoneModel(OpenAIChatModel):
                  strip_thinking: bool = True,
                  merge_system_prompt: bool = False):
         super().__init__(name, model_id, endpoint,
-                         sampling_params or ExaoneParams(thinking=True), # temperature=1.0, top_p=0.95
+                         sampling_params or ExaoneParams(thinking=True),
                          strip_thinking=strip_thinking,
                          merge_system_prompt=merge_system_prompt)
-
-    def _extra_payload(self) -> dict:
-        return {"chat_template_kwargs": {"enable_thinking": self.sampling_params.thinking}}
