@@ -39,7 +39,7 @@ class OpenAIChatModel(BaseModel):
         self,
         name: str,
         model_id: str,
-        endpoint: str,
+        endpoint: str = "http://localhost:8000/v1/chat/completions",
         sampling_params: OpenAIChatParams | dict | None = None,
         prompt_adapter=None,
         tgt_lang: str | None = None,

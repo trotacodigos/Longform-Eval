@@ -1,6 +1,12 @@
-from .sampling import HuggingFaceParams
-from .base_hf import HFChatModel
+from .sampling import OpenAIChatParams
+from .base_openai import OpenAIChatModel
 
-class SolarOpenModel(HFChatModel):
-    def __init__(self, name="solar-open-100b", model_id="upstage/Solar-Open-100B", endpoint, sampling_params: HuggingFaceParams | dict | None = None):
-        super().__init__(name, model_id, endpoint, sampling_params)
+class SolarOpenModel(OpenAIChatModel):
+    def __init__(self, 
+                 name="solar-open-100b", 
+                 model_id="upstage/Solar-Open-100B", 
+                 sampling_params: OpenAIChatParams | dict | None = None,
+                 strip_thinking: bool = False,
+                 merge_system_prompt: bool = False):
+        super().__init__(name, model_id, sampling_params=sampling_params or OpenAIChatParams(),
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)

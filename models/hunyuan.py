@@ -30,13 +30,12 @@ class HunyuanMTModel(OpenAIChatModel):
     def __init__(self,
                  name="hunyuan-mt-7b",
                  model_id="tencent/Hunyuan-MT-7B",
-                 endpoint="http://localhost:8000/v1/chat/completions",
                  sampling_params: OpenAIChatParams | dict | None = None,
                  src_lang: str = "en", # TODO
                  tgt_lang: str = "ko",
                  strip_thinking = False,
                  ):
-        super().__init__(name, model_id, endpoint, sampling_params or OpenAIChatParams(), 
+        super().__init__(name, model_id, sampling_params or OpenAIChatParams(), 
                          strip_thinking=strip_thinking, merge_system_prompt=True)
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang

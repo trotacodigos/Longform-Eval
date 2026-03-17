@@ -6,12 +6,10 @@ class DeepSeekV3Model(OpenAIChatModel):
     def __init__(self,
                  name: str = "deepseek-v3.2",
                  model_id: str = "deepseek-ai/DeepSeek-V3.2",
-                 endpoint: str = "http://localhost:8000/v1/chat/completions",
                  sampling_params: DeepseekParams | dict | None = None,
                  strip_thinking: bool = True,
                  merge_system_prompt: bool = False):
-        super().__init__(name, model_id, endpoint,
-                         sampling_params or DeepseekParams(thinking=True),
+        super().__init__(name, model_id, sampling_params or DeepseekParams(thinking=True),
                          strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
 
     def _extra_payload(self) -> dict:
