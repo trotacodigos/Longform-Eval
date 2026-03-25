@@ -65,8 +65,8 @@ def main():
         lp_dirs[lp] = (src_dir, tgt_dir, src_lang, tgt_lang)
 
         out_dir = os.path.join(BASE_OUT_DIR, lp)
-        f_in = open(os.path.join(out_dir, f'input_{lp}.jsonl'), 'w', encoding='utf-8')
-        f_out = open(os.path.join(out_dir, f'output_{lp}.jsonl'), 'w', encoding='utf-8')
+        f_in = open(os.path.join(out_dir, f'input.jsonl'), 'w', encoding='utf-8')
+        f_out = open(os.path.join(out_dir, f'output.jsonl'), 'w', encoding='utf-8')
         out_files[lp] = (f_in, f_out)
         sample_ids[lp] = 1
 
