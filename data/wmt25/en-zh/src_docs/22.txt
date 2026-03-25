@@ -1,0 +1,47 @@
+Even though I've mostly transitioned to PC gaming over the past decade, my preferred peripherals are still controllers.
+I understand the advantages of KB+M play, but as someone who already uses those tools for work I find picking up a controller helps separate the two activities and gives my wrists a break. I've also been playing video games long enough to see the technology and layouts used drastically change, though some first party controllers seem to have stagnated a bit.
+I recently found a controller I really liked because it has features that have really impressed me enough to want to talk about it at length, but to do that I feel the need for some context; not a whole history lesson, just a little stroll through my collection of controllers that materialized over a lifetime of engaging in this hobby.
+By the end I hope you'll understand why this is a topic I care so much about I'd spend all day talking about these devices.
+
+My decision to build up a PC game collection started during the transition between the Xbox 360 and the Xbox One; I thoroughly enjoyed the 360, but the One was looking like a disaster. Since the new consoles from all three major companies held little interest and I'd been in school for Computer Information Systems, I got myself a 360 pc dongle and resolved to make the switch.
+Each of these controllers saw extensive use, and the 360 had the asymmetrical stick placement I preferred. All but two of the controllers in this picture are currently unusable either from loose/drifting sticks, faulty buttons, or failing cables/connections; both of the working ones are 3rd party Afterglows (which have their own problems).
+As much as I loved these controllers, the official ones were the worst in terms of durability, and some were faulty from day one but Microsoft would refuse my RMA request.
+It got worse when I tried the most expensive one.
+
+There was a time when I fell for the myth that "You get what you pay for" was as true for expensive stuff as it was for cheap stuff; it's because of this controller that I know better. I got this Elite Series 2 controller despite knowing the first iteration had some serious flaws.
+That controller lasted just under a year before the stick drift started to set in, and the right bumper only registered half of the time. The cable it came with sucks ass, never worked with any other controllers. The lag from using bluetooth was so bad the dongle was practically necessary. On top of all that, the back paddles didn't work no matter what software/drivers I used, none of my games ever read those paddles as an inputs.
+The Raikiri Pro (was bundled with a laptop) is my current dedicated desktop controller and it works fine [for now], but I will never spend another dime on Official Xbox branded controllers. Fuck Microsoft, I hope Xbox rots!
+
+The Nintendo Switch reignited my love for portable gaming after years of surviving out of crappy laptops. The joycons were small but versatile, and the pro controller felt really comfortable in the hands.
+I loved these controllers so much I modified them and swapped in hall-effect sticks [and metal latches] this past year, and while I'm well aware of the drift issue, mine have worked flawlessly since 2017 with no signs of wearing out. I've put just as many hours into these controllers as I did all those Xbox controllers; either I got very lucky or microsoft designs their controllers to fail faster than both of their competitors combined. Nintendo's offerings have some drawbacks, but the fact it's additional features like Gyro input have been officially supported is noteworthy.
+I hope to keep these controllers working for as long as they continue to be supported on other platforms; there are many like them, but these ones are mine.
+
+A brief note on Play Station controllers to round out the 1st party lineup: I never liked them.
+Dual Shock 1-3 felt exactly the same to me with exactly the same flaws: Oversized thumbsticks placed too close together, mushy face/shoulder/trigger buttons that seemed to wear out very quickly, and a D-pad that just felt wrong. Dual Shock 4 fixed a lot of problems, but introduced a bunch of new ones. I got a Dual Sense because some friends had a hard time with asymmetrical thumbsticks, and for some reason local stores were selling them for $20 less than DS4 controllers.
+I don't really use this controller: Face buttons are spaced too far apart, my audio in/output keeps defaulting to the controller when it's connected, the bumpers are weirdly tall, and I keep accidentally pressing the track pad when trying to hit menu/share.
+They are fine guest controllers that have come a long way in terms of design, but for me they're a novelty at best.
+
+8BitDo was my first foray into good 3rd party controllers. This original SN30 Pro (later versions have hall-effect sticks and do not come in the SNES colour scheme) remains one of my favourites because holding it is reminiscent of my first console, the SNES.
+If I'm having a crappy day and need a nostalgic escape, this is the first controller I reach for. It has all the functionality of a Switch Pro controller, but compacted into a modernized rendition of the SNES controller, complete with concave X/Y + convex A/B buttons, and possibly the best D-pad I've ever used. It's got some minor problems, but it's been a constant source of comfort.
+One day the sticks will fail, or the battery will discharge for the last time; but if it means getting one of the modern versions (with hall-effect sticks) and shell-swapping them, I'll do it when the time comes.
+With such a connection, surely 8BitDo can't do better than this, right? Well...
+
+When I want the familiar comforts of the SN30 Pro but with all the features of a modern controller, the 8BitDo Pro 2 has been my multi-platform controller of choice.
+Everything about this is a functional upgrade from the SN30 Pro: more comfortable grips, hall-effect sticks, analog triggers, programmable back paddles, a physical X/D/S/A mode toggle switch, and a [somewhat] easily replaceable battery with the option of using AAs in a pinch. I also sprung for the carrying case and the mobile phone holster, which doesn't see as much use with a phone (I don't trust its grip that much), but for more compact retro emulation handhelds, it can expand the list of playable games to include ones that need precise analog controls.
+There's very few negatives I can say about this controller, but it sits at a close 3rd for favourite controller of my collection. I'll talk about my number 2 pick in a moment, but before that I need to talk about...
+
+How hard is it to find a modernized N64 controller?
+There are plenty of cheap N64 imitation controllers, but the three-pronged original was an objectively bad design. I could play N64 games with a modern controller using clever configuration to make the face buttons function as C-buttons, but it's not the same for so many reasons.
+I got the RetroFighters Brawler 64 to solve this anachronistic conundrum, and it's gone above and beyond my expectations. It was made to mimic the official NSO N64 controller down to the Switch recognizing it as one, with a toggle to make it register as a Pro controller sans right-stick.
+It has some problems, but between its layout and compatibility it solves way more problems the official version has. It's perfect for showing someone N64 emulation without the intimidation of the original or the anachronism from finagling a modern controller to work the same.
+It's very good at what it's trying to do.
+
+I got this steam controller from a pawn shop after negotiating the price down shortly after the fire sale came to an end on steam. It needed some TLC, and I did what I could to get it up and running again.
+It remains one of the most customizable controllers in my collection, with a unique [if questionable] design and features ahead of it's time (gyro aim, back paddles, haptic feedback, etc). It has some problems though; It requires AAs, uses Micro-USB for wired connections, occasionally turns itself back on after being turned off, the back paddles are stiff enough to cause fatigue, the thumbstick cap is necessary since the rubber on it is deteriorating, and it's functionality tends to fluctuate with every update to steam input.
+It's more of a unique historical artifact than a regularly used input, but it's a welcome addition and fun to tinker with on rainy days.
+It also isn't my number 2 pick, that honour goes to the fact that...
+
+The 8BitDo Ultimate Bluetooth controller is an almost perfect controller.
+Hall-effect sticks, included charging dock that doubles as a port for the included dongle, dedicated 2.4ghz/bluetooth toggle switch, NS Pro layout with a much improved D-pad, analog triggers, and programmable back paddles. When I sit down on a couch with this controller, I can swap between a Steam Deck and a Switch faster than the time it takes the TV to switch inputs.
+It does have some drawbacks though: It only does X/Switch signals (no android or apple modes), the triggers are uncomfortable, and input lag seems to be affected by the time it took to connect to the dongle/switch.
+I thought this was the best it could get, but like my time with Xbox controllers I was operating on assumptions that started to sound like old brand loyalty reflexes coming back. What I'd hoped to upgrade it to was such a disappointment it swiftly shook me from those assumptions.
