@@ -11,6 +11,13 @@ def read_jsonl(file: str):
     with open(file, "r", encoding="utf-8") as f:
         return [json.loads(l) for l in f]
 
+
+def write_jsonl(path: str, records: list) -> None:
+    with open(path, "w", encoding="utf-8") as f:
+        for rec in records:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
 def preprocess():
     root = "../../data/wmt24pp"
 
@@ -69,10 +76,13 @@ def main():
     tgt_docs = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     inputs = []
     outputs = []
+    seen_samples = set()
 
     for rec in filtered:
         new_doc_id = doc_map[rec["doc_id"]]
-        src_docs[new_doc_id].append(rec["src_seg"])
+        if rec["sample_id"] not in seen_samples:
+            src_docs[new_doc_id].append(rec["src_seg"])
+            seen_samples.add(rec["sample_id"])
         tgt_docs[tgt_lang][rec["system"]][new_doc_id].append(rec["tgt_seg"])
         inputs.append({
             "sample_id": rec["sample_id"],
@@ -95,7 +105,6 @@ def main():
             "auto": {},
         })
 
-    # save files
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "doc_id.json"), "w", encoding="utf-8") as f:
         f.write(json.dumps({v: k for k, v in doc_map.items()}, ensure_ascii=False) + "\n")
@@ -105,25 +114,20 @@ def main():
     for doc_id, doc in src_docs.items():
         with open(os.path.join(src_dir, f"{doc_id}.txt"), "w", encoding="utf-8") as f:
             for line in doc:
-                f.write(line)
+                f.write(line + "\n")
 
     tgt_dir = os.path.join(out_dir, "tgt_docs")
     for lang, v in tgt_docs.items():
         for sys, vv in v.items():
+            sys_dir = os.path.join(tgt_dir, f"en-{lang[:2]}", sys)
+            os.makedirs(sys_dir, exist_ok=True)
             for doc_id, doc in vv.items():
-                sys_dir = os.path.join(tgt_dir, f"en-{lang[:2]}", sys)
-                os.makedirs(sys_dir, exist_ok=True)
                 with open(os.path.join(sys_dir, f"{doc_id}.txt"), "w", encoding="utf-8") as f:
                     for line in doc:
-                        f.write(line)
+                        f.write(line + "\n")
 
-    with open(os.path.join(out_dir, "input.jsonl"), "w", encoding="utf-8") as f:
-        for line in inputs:
-            f.write(json.dumps(line, ensure_ascii=False) + "\n")
-
-    with open(os.path.join(out_dir, "output.jsonl"), "w", encoding="utf-8") as f:
-        for line in outputs:
-            f.write(json.dumps(line, ensure_ascii=False) + "\n")
+    write_jsonl(os.path.join(out_dir, "input.jsonl"), inputs)
+    write_jsonl(os.path.join(out_dir, "output.jsonl"), outputs)
 
 
 if __name__ == "__main__":
