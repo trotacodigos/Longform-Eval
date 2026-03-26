@@ -72,6 +72,7 @@ def main():
         })
         outputs.append({
             "sample_id": sample_id,
+            "doc_id": new_doc_id,
             "src_seg": src_seg,
             "tgt_seg": record["tgt_seg"],
             "ref_seg": ref_seg,
