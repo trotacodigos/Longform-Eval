@@ -2,14 +2,10 @@ import json
 import os
 from collections import defaultdict
 
-ALLOWED_DOMAINS = {"literary", "news", "social"}
+from utils import write_jsonl, ALLOWED_DOMAINS
+
+
 ALLOWED_TGT_LANGS = {"zh_CN", "ko_KR"}
-
-
-def write_jsonl(path: str, records: list) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        for rec in records:
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
 def main():
