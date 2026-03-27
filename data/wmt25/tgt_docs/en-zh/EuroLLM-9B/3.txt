@@ -1,7 +1,0 @@
-2 个行业领衔市场。Broadcom 可能有另一个定制芯片合作伙伴
-
-每周五,CNBC 投资俱乐部与 Jim Cramer 发布 Homestretch - 一份实用的下午更新，刚好赶上华尔街交易的最后一个小时。市场动态：股票在新的一周开始上涨，道指、标普 500 和纳斯达克指数都摆脱了上周在华尔街造成下跌的贸易和关税头条。周一能源是表现最好的行业，这得益于石油和天然气价格的上涨。我们唯一的石油和天然气公司 Coterra Energy 股价上涨约 3.8%。然而，技术是推动市场整体上涨的主要动力，因为 Magnificent Seven 股票表现强劲。俱乐部拥有其中 6 只股票：苹果、Alphabet、亚马逊、Meta Platforms、微软和 Nvidia。Magnificent Seven 的第七只股票是特斯拉。周一没有表现活跃的两个行业是医疗保健和金融。这两个行业都是今年表现最好的行业之一，但 2 月份以来受到了压力。我们在周二的三个金融立场 - Wells Fargo、Goldman Sachs 和 BlackRock - 将在会议上发表讲话。因此，我们将听到他们最新的消息。
-
-Broadcom：Broadcom 的新定制 AI 芯片合作伙伴关系之一正在引起关注。周一，路透社报道，ChatGPT 创始人 OpenAI 正在完成其首个内部芯片的设计。报道称，该芯片处于后期阶段，可能在今年晚些时候开始大规模生产。台湾半导体公司将制造这款新定制芯片，但报道称，该芯片是由 OpenAI 内部团队与 Broadcom 合作设计的。Hock Tan 领导的 Broadcom 目前有三个定制 AI 芯片客户，这些客户被广泛认为是 Alphabet 和 Meta - 最近是 ByteDance，中国 TikTok 的所有者。当 Broadcom 上次报告收益时，Tan 透露公司正在与另外两个超大规模企业进行 AI 芯片开发，这使得股价几乎上涨 25%。根据之前的媒体报道，OpenAI 和苹果被认为是这两个客户。微软是 OpenAI 的财务支持者和合作伙伴。在 Broadcom 12 月收益电话中，Tan 估计公司 AI 业务的服务可达市场（SAM），包括定制和网络芯片的销售，为 600 亿美元至 900 亿美元。这一乐观目标不包括这两个新客户的定制硅销售。如果所有报道属实，拥有生产的第四个 AI 芯片客户对 Broadcom 捕获这个大型 SAM 来说是个好消息。Broadcom 股价周一上涨 4.5%，但仍低于 1 月 24 日中国初创公司 DeepSeek 病毒式传播声称更便宜的 AI 模型导致芯片股下跌之前的收盘价。
-
-接下来：这是一个安静的收益周。周一报告后的一些公司包括 Vertex Pharmaceutical、Lattice Semiconductor 和 Astera Labs。周二开盘前，可口可乐、万豪、Humana 和 Club 公司 DuPont 报告季度结果。（请参阅 CNBC 投资俱乐部与 Jim Cramer 的慈善信托基金中股票的完整列表。）作为 CNBC 投资俱乐部与 Jim Cramer 的订阅者，您将在 Jim 进行交易之前收到交易提醒。Jim 在发送交易提醒后等待 45 分钟再买入或卖出其慈善信托基金组合中的股票。如果 Jim 在 CNBC TV 上谈论过一只股票，他会在发出交易提醒后等待 72 小时再执行交易。

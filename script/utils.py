@@ -1,7 +1,7 @@
 import json
 
 ALLOWED_DOMAINS = {"literary", "news", "social"}
-LANG_MAP = {"en": "English", "zh_CN": "Chinese", "ko_KR": "Korean"}
+LANG_MAP = {"en": "English", "zh_CN": "Chinese", "ko_KR": "Korean (South Korea)"}
 
 
 def read_jsonl(file: str):

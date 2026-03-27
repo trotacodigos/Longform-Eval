@@ -11,7 +11,7 @@ def preprocess():
 
     # 1. metadata
     records = read_jsonl(os.path.join(root, "metadata", LP, "src.jsonl"))
-    records = [{**rec, "sample_id": i} for i, rec in enumerate(records)]
+    records = [{**rec, "seg_id": i} for i, rec in enumerate(records)]
 
     # 2. domain, doc_id
     with open(os.path.join(root, "documents", f"{LP}.docs"), "r", encoding="utf-8") as f:
@@ -68,12 +68,12 @@ def main():
 
     for rec in filtered:
         new_doc_id = doc_map[rec["doc_id"]]
-        if rec["sample_id"] not in seen_samples:
+        if rec["seg_id"] not in seen_samples:
             src_docs[new_doc_id].append(rec["src_seg"])
-            seen_samples.add(rec["sample_id"])
+            seen_samples.add(rec["seg_id"])
         tgt_docs[tgt_lang][rec["system"]][new_doc_id].append(rec["tgt_seg"])
         inputs.append({
-            "sample_id": rec["sample_id"],
+            "seg_id": rec["seg_id"],
             "doc_id": new_doc_id,
             "domain": rec["domain"],
             "system": rec["system"],
@@ -83,7 +83,7 @@ def main():
             "tgt_seg": rec["tgt_seg"],
         })
         outputs.append({
-            "sample_id": rec["sample_id"],
+            "seg_id": rec["seg_id"],
             "doc_id": new_doc_id,
             "src_seg": rec["src_seg"],
             "tgt_seg": rec["tgt_seg"],
