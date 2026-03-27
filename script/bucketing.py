@@ -3,44 +3,41 @@ import numpy as np
 import re
 import json
 
-from utils import read_jsonl, write_jsonl
 
+def create_bucket_id(df, lp: str, out_dir: str):
+    def bucketing(doc_len):
+        p33, p66 = np.percentile(doc_len, [33, 66])
+        def bucket(n):
+            if n <= p33: return "short"
+            if n <= p66: return "medium"
+            return "long"
+        return [bucket(n) for n in doc_len]
+    
+    df_ = df.drop_duplicates(subset="doc_id")[["new_doc_id", "src_doc"]].copy()
+    df_["token_len"] = df_["src_doc"].apply(
+        lambda x: len([w for w in x.split() if re.sub(r"[^\w]", "", w, flags=re.UNICODE)])
+    )
+    df_["bucket_id"] = bucketing(df_["token_len"].tolist())
 
-def bucketing(doc_len):
-    p33, p66 = np.percentile(doc_len, [33, 66])
-    def bucket(n):
-        if n <= p33: return "short"
-        if n <= p66: return "medium"
-        return "long"
-    return [bucket(n) for n in doc_len]
+    doc2bucket = df_.set_index("new_doc_id")["bucket_id"].to_dict()
+    bucket_ids = df["new_doc_id"].map(doc2bucket)
+    df.insert(2, "bucket_id", bucket_ids)
 
+    src_doc = df_.set_index("new_doc_id")["src_doc"].to_dict()
 
-def doc_bucket_mapping():
-    years = {"24": "data/wmt24pp", "25": "data/wmt25"}
+    tgt_dedup = df.drop_duplicates(subset=["new_doc_id", "system"])[["new_doc_id", "system", "tgt_doc"]]
+    tgt_doc = {
+        str(doc_id): grp.set_index("system")["tgt_doc"].to_dict()
+        for doc_id, grp in tgt_dedup.groupby("new_doc_id")
+    }
 
-    doc_len = {}
-    for y, year_dir in years.items():
-        src_dir = os.path.join(year_dir, "src_docs")
-        for file in os.listdir(src_dir):
-            if file.endswith(".txt"):
-                with open(os.path.join(src_dir, file), "r", encoding="utf-8") as f:
-                    doc = [l.strip() for l in f]
-                tokens = [re.sub(r"[^\w]", "", w, flags=re.UNICODE) for l in doc for w in l.split()]
-                doc_len[f"{y}_{file}"] = len([t for t in tokens if t and not t.isdigit()])
+    # Save documents
+    lp_dir = os.path.join(out_dir, lp)
+    os.makedirs(lp_dir, exist_ok=True)
+    with open(os.path.join(lp_dir, "src_doc.json"), "w", encoding="utf-8") as f:
+        json.dump(src_doc, f, ensure_ascii=False)
 
-    buckets = bucketing(list(doc_len.values()))
-    doc_bucket_map = dict(zip(doc_len.keys(), buckets))
+    with open(os.path.join(lp_dir, "tgt_doc.json"), "w", encoding="utf-8") as f:
+        json.dump(tgt_doc, f, ensure_ascii=False)
 
-    for y, year_dir in years.items():
-        year_map = {k.removeprefix(f"{y}_"): v for k, v in doc_bucket_map.items() if k.startswith(f"{y}_")}
-        with open(os.path.join(year_dir, "bucket_map.json"), "w", encoding="utf-8") as f:
-            f.write(json.dumps(year_map, ensure_ascii=False) + "\n")
-
-        data = read_jsonl(os.path.join(year_dir, "output.jsonl"))
-        for line in data:
-            line["bucket_id"] = doc_bucket_map[f"{y}_{line['doc_id']}.txt"]
-        write_jsonl(os.path.join(year_dir, "output.jsonl"), data)
-
-
-if __name__ == "__main__":
-    doc_bucket_mapping()
+    return df

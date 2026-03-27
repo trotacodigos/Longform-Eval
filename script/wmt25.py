@@ -1,13 +1,16 @@
 import pandas as pd
-import os, re
+import os
 import json
-import numpy as np               
+
 from utils import LANG_MAP, ALLOWED_DOMAINS, read_jsonl, write_jsonl
+from bucketing import create_bucket_id
+
 
 LP = ("en-ko_KR", "en-zh_CN")
 _HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(_HERE, "../../../data/wmt25-general-mt/data/")
 OUT_DIR = os.path.join(_HERE, "../data/wmt25/")
+
 
 def read_hypotheses(lp: str):
     hyp_dir = os.path.join(ROOT, "systems")
@@ -62,50 +65,14 @@ def merge_data(lp: str, src_cache: list):
                "system", "src_doc", "tgt_doc", "ref_doc"]]
 
 
-def create_bucket_id(df, lp: str):
-    def bucketing(doc_len):
-        p33, p66 = np.percentile(doc_len, [33, 66])
-        def bucket(n):
-            if n <= p33: return "short"
-            if n <= p66: return "medium"
-            return "long"
-        return [bucket(n) for n in doc_len]
-    
-    df_ = df.drop_duplicates(subset="doc_id")[["new_doc_id", "src_doc"]].copy()
-    df_["token_len"] = df_["src_doc"].apply(
-        lambda x: len([w for w in x.split() if re.sub(r"[^\w]", "", w, flags=re.UNICODE)])
-    )
-    df_["bucket_id"] = bucketing(df_["token_len"].tolist())
-
-    doc2bucket = df_.set_index("new_doc_id")["bucket_id"].to_dict()
-    bucket_ids = df["new_doc_id"].map(doc2bucket)
-    df.insert(2, "bucket_id", bucket_ids)
-
-    src_doc = df_.set_index("new_doc_id")["src_doc"].to_dict()
-
-    tgt_dedup = df.drop_duplicates(subset=["new_doc_id", "system"])[["new_doc_id", "system", "tgt_doc"]]
-    tgt_doc = {
-        str(doc_id): grp.set_index("system")["tgt_doc"].to_dict()
-        for doc_id, grp in tgt_dedup.groupby("new_doc_id")
-    }
-
-    # Save documents
-    lp_dir = os.path.join(OUT_DIR, lp)
-    os.makedirs(lp_dir, exist_ok=True)
-    with open(os.path.join(lp_dir, "src_doc.json"), "w", encoding="utf-8") as f:
-        json.dump(src_doc, f, ensure_ascii=False)
-
-    with open(os.path.join(lp_dir, "tgt_doc.json"), "w", encoding="utf-8") as f:
-        json.dump(tgt_doc, f, ensure_ascii=False)
-
-    return df
-
 def save_dummy(df_in, df_out, out_dir):
-    os.makedirs(out_dir, exist_ok=True)
+
+    save_dir = os.path.join(out_dir, "dummy")
+    os.makedirs(save_dir, exist_ok=True)
     sample_idx = df_in.sample(3).index
 
-    write_jsonl(os.path.join(out_dir, "dummy_in.jsonl"), df_in.loc[sample_idx].to_dict(orient="records"))
-    write_jsonl(os.path.join(out_dir, "dummy_out.jsonl"), df_out.loc[sample_idx].to_dict(orient="records"))
+    write_jsonl(os.path.join(save_dir, "dummy_in.jsonl"), df_in.loc[sample_idx].to_dict(orient="records"))
+    write_jsonl(os.path.join(save_dir, "dummy_out.jsonl"), df_out.loc[sample_idx].to_dict(orient="records"))
 
 
 def main():
@@ -139,7 +106,7 @@ def main():
         write_jsonl(os.path.join(out_dir, "output.jsonl"), outputs.to_dict(orient="records"))
 
         # save samples
-        save_dummy(inputs, outputs, os.path.join("../data/dummy"))
+        save_dummy(inputs, outputs, out_dir)
 
 if __name__ == "__main__":
     main()
