@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from tqdm import tqdm
 
-from prompts.ape_prompt import build_prompt_with_doc
+from script.ape_prompt import build_prompt_with_doc
 from models import REGISTRY
 
 
