@@ -40,6 +40,8 @@ class OpenAIParams(ThinkingMixin, SamplingParams):
         kwargs = super().to_kwargs()
         kwargs.pop("top_k", None)
         kwargs.pop("thinking", None)
+        if self.thinking:
+            kwargs["max_completion_tokens"] = kwargs.pop("max_tokens", None)
         return kwargs
 
 @dataclass

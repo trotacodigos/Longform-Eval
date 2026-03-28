@@ -1,16 +1,16 @@
 import os
 import json
 from typing import Dict
-from .utils import read_jsonl, LANG_MAP
+from .utils import LANG_MAP
 
 
 _CACHED_TEMPLATES = None
 
 def _get_templates() -> Dict[str, Dict]:
     global _CACHED_TEMPLATES
-    template = "data/template.json"
     if _CACHED_TEMPLATES is None:
-        _CACHED_TEMPLATES = read_jsonl(template)
+        with open("data/template.json", "r", encoding="utf-8") as f:
+            _CACHED_TEMPLATES = json.load(f)
     return _CACHED_TEMPLATES
 
 

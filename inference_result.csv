@@ -1,0 +1,4 @@
+model_name,input_token,output_token,latency_sec,tps
+gpt-5.4-2026-03-05,101,25,,
+gpt-5.4-2026-03-05,259,133,,
+gpt-5.4-2026-03-05,130,47,,

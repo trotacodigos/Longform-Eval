@@ -12,6 +12,11 @@ class GPT4oMini(OpenAIModel):
         super().__init__("gpt-4o-mini", "gpt-4o-mini", sampling_params or OpenAIParams())
 
 
-class GPT52Thinking(OpenAIModel):
+class GPT5_2Thinking(OpenAIModel):
     def __init__(self, sampling_params=None):
         super().__init__("gpt-5.2-thinking", "gpt-5.2-thinking", sampling_params or OpenAIParams(thinking=True))
+
+
+class GPT5_4(OpenAIModel):
+    def __init__(self, sampling_params=None):
+        super().__init__("gpt-5.4-2026-03-05", "gpt-5.4-2026-03-05", sampling_params or OpenAIParams(thinking=True))
