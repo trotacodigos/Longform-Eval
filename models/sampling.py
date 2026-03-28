@@ -36,6 +36,12 @@ class OpenAIParams(ThinkingMixin, SamplingParams):
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
 
+    def to_kwargs(self) -> Dict[str, Any]:
+        kwargs = super().to_kwargs()
+        kwargs.pop("top_k", None)
+        kwargs.pop("thinking", None)
+        return kwargs
+
 @dataclass
 class ClaudeParams(SamplingParams):
     def to_kwargs(self) -> Dict[str, Any]:

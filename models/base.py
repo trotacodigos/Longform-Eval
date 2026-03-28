@@ -17,7 +17,7 @@ class BaseModel(ABC):
     """
     BATCH_WORKERS: int = 32
 
-    def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None, log_path: str = "inference_result.csv"):
+    def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None, log_path: str = "data/outputs/inference_result.csv"):
         self.name = name
         self.model_id = model_id
         self.sampling_params = (

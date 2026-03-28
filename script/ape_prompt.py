@@ -1,7 +1,7 @@
 import os
 import json
 
-from utils import read_jsonl
+from .utils import read_jsonl, LANG_MAP
 
 
 _CACHED_TEMPLATES = None
@@ -40,12 +40,12 @@ def build_prompt(entry: dict, has_doc=True):
         raise ValueError(f"No template found for has_doc={has_doc}")
 
     params = {k: entry[k] for k in ("src_lang", "tgt_lang", "src_seg", "tgt_seg")}
-    lp = f'{entry["src_lang"]}-{entry["tgt_lang"]}'
+    lang_map = {v: k for k, v in LANG_MAP.items()}
+    lp = f'{lang_map[entry["src_lang"]]}-{lang_map[entry["tgt_lang"]]}'
     doc_id = str(entry["new_doc_id"])
-    base_args = entry["wmt_year"], lp, doc_id
 
-    src_doc = load_doc_from_json(*base_args, direction="src")
-    tgt_doc = load_doc_from_json(*base_args, direction="tgt", system=entry["system"])
+    src_doc = load_doc_from_json(entry["wmt_year"], lp, "src", doc_id)
+    tgt_doc = load_doc_from_json(entry["wmt_year"], lp, "tgt", doc_id, system=entry["system"])
 
     if has_doc:
         params |= {"src_doc": src_doc, "tgt_doc": tgt_doc}

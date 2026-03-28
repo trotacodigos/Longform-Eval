@@ -92,7 +92,17 @@ class OpenAIModel(BaseModel):
             print(f"[OpenAI batch] ended with status={status.status}")
             return [None] * len(prompts)
 
-        # 5. Retrieve and parse results
+        # 5. Log errors if any
+        if status.error_file_id:
+            errors = self.client.files.content(status.error_file_id)
+            for line in errors.text.splitlines():
+                print(f"[OpenAI batch] error: {line}")
+
+        if not status.output_file_id:
+            print("[OpenAI batch] no successful results (output_file_id is None)")
+            return [None] * len(prompts)
+
+        # 6. Retrieve and parse results
         results: list[tuple[str, dict] | None] = [None] * len(prompts)
 
         output = self.client.files.content(status.output_file_id)
