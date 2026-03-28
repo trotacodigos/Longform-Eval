@@ -1,11 +1,13 @@
 from pathlib import Path
 import argparse
 import json
-
+import sys
 from tqdm import tqdm
 
-from script.utils import read_jsonl
-from script.ape_prompt import build_prompt
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from utils import read_jsonl
+from ape_prompt import build_prompt
 from models import REGISTRY
 
 

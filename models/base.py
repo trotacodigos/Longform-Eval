@@ -1,5 +1,5 @@
-from tools import rough_token_count
-from sampling import SamplingParams
+from .tools import rough_token_count
+from .sampling import SamplingParams
 
 import os, time
 import copy
@@ -70,7 +70,7 @@ class BaseModel(ABC):
 
         with ThreadPoolExecutor(max_workers=self.BATCH_WORKERS) as executor:
             futures = {
-                executor.submit(self.generate, i, sys, usr): i
+                executor.submit(self.generate, sys, usr): i
                 for i, (sys, usr) in enumerate(prompts)
             }
             for future in as_completed(futures):
