@@ -34,7 +34,7 @@ def main():
     out_data = {(l["seg_id"], l["doc_id"], l["system"]): l for l in out_data}
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{args.model}.jsonl"
+    out_path = out_dir / f"{args.level}_{args.model}.jsonl"
 
     # Build prompts for all valid entries
     batch_items = []  # list of (out_row, system_prompt, user_prompt)

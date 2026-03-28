@@ -1,0 +1,130 @@
+[2026-03-28 20:25:37] Starting: google/gemma-3-27b-it
+[33m⚠️  Warning: 'huggingface-cli download' is deprecated. Use 'hf download' instead.[0m
+Fetching 25 files:   0%|          | 0/25 [00:00<?, ?it/s]Fetching 25 files:   0%|          | 0/25 [00:00<?, ?it/s]
+Downloading 'README.md' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/fdce721ee5de878029a086bcc7f6cd7f183fab32.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/fdce721ee5de878029a086bcc7f6cd7f183fab32
+Traceback (most recent call last):
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 403, in hf_raise_for_status
+    response.raise_for_status()
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 403 Client Error: Forbidden for url: https://huggingface.co/google/gemma-3-27b-it/resolve/005ad3404e59d6023443cb575daa05336842228a/.gitattributes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ssu/Documents/1_idol/.venv/bin/huggingface-cli", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/commands/huggingface_cli.py", line 61, in main
+    service.run()
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/commands/download.py", line 157, in run
+    print(self._download())  # Print path to downloaded files
+          ^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/commands/download.py", line 191, in _download
+    return snapshot_download(
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 332, in snapshot_download
+    thread_map(
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/tqdm/contrib/concurrent.py", line 69, in thread_map
+    return _executor_map(ThreadPoolExecutor, fn, *iterables, **tqdm_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/tqdm/contrib/concurrent.py", line 51, in _executor_map
+    return list(tqdm_class(ex.map(fn, *iterables, chunksize=chunksize), **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/tqdm/std.py", line 1181, in __iter__
+    for obj in iterable:
+               ^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 306, in _inner_hf_hub_download
+    return hf_hub_download(
+           ^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1014, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1121, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1662, in _raise_on_head_call_error
+    raise head_call_error
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1550, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1467, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 307, in _request_wrapper
+    hf_raise_for_status(response)
+  File "/home/ssu/Documents/1_idol/.venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 420, in hf_raise_for_status
+    raise _format(GatedRepoError, message, response) from e
+huggingface_hub.errors.GatedRepoError: 403 Client Error. (Request ID: Root=1-69c7bab2-01f87ad37e71ac1456be15e8;cd498280-aaa7-4b5e-bbda-d084e1bd0c02)
+
+Cannot access gated repo for url https://huggingface.co/google/gemma-3-27b-it/resolve/005ad3404e59d6023443cb575daa05336842228a/.gitattributes.
+Access to model google/gemma-3-27b-it is restricted and you are not in the authorized list. Visit https://huggingface.co/google/gemma-3-27b-it to ask for access.
+[2026-03-28 20:25:38] FAILED: google/gemma-3-27b-it
+[2026-03-28 20:25:38] Starting: Qwen/Qwen3.5-27B
+[33m⚠️  Warning: 'huggingface-cli download' is deprecated. Use 'hf download' instead.[0m
+Fetching 23 files:   0%|          | 0/23 [00:00<?, ?it/s]Downloading 'model.safetensors-00001-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/9019228d172c87d5603266c2d56672d119e838facffa164de803a1ebf0d716d2.incomplete'
+Downloading 'model.safetensors-00002-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/890ef00c920b01c1c02755088c8d8ca5cdd6a1faa2a9a729eecd00857648b411.incomplete'
+Downloading 'merges.txt' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/a494e019ca1502219fd0128658b979e5f05ae8e8.incomplete'
+Downloading '.gitattributes' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/52373fe24473b1aa44333d318f578ae6bf04b49b.incomplete'
+Downloading 'README.md' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/74e6d7dee51fd4b33cd4448c5f1d5a4fa3ebd797.incomplete'
+Downloading 'chat_template.jinja' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/a585dec894e63da457d9440ec6aa7caa16d20860.incomplete'
+Downloading 'generation_config.json' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/85b45ab4f3a24f95a061c5260559471a259187cc.incomplete'
+Downloading 'config.json' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/bde2be7f34a16fcdf78b9050319cdb330a15fecd.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/52373fe24473b1aa44333d318f578ae6bf04b49b
+Fetching 23 files:   4%|▍         | 1/23 [00:01<00:22,  1.04s/it]Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/74e6d7dee51fd4b33cd4448c5f1d5a4fa3ebd797
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/a585dec894e63da457d9440ec6aa7caa16d20860
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/85b45ab4f3a24f95a061c5260559471a259187cc
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/bde2be7f34a16fcdf78b9050319cdb330a15fecd
+Downloading 'model.safetensors-00003-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/8aca03689ad0717fb91455809a6670eecca818bea8c0b6bd3a591a8807cc3223.incomplete'
+Downloading 'model.safetensors-00004-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/20f539430c60fa611b3522b8408749a080b63f1fe034e551a6539ef864ca079a.incomplete'
+Downloading 'model.safetensors-00007-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/d426963325b2319cb9e1442bc8b89b9a7748a8f7a907aa4041c11531cda6b014.incomplete'
+Downloading 'model.safetensors-00005-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/57a0c074c654f05fc2d6b5112eeec387ac04986e928e42f502993e69aa03a49d.incomplete'
+Downloading 'model.safetensors-00006-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/cfa4e6fbfc600854ef6c8e5465d0a1e43832a64b5e539f1e880333e3b1086703.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/a494e019ca1502219fd0128658b979e5f05ae8e8
+Fetching 23 files:  26%|██▌       | 6/23 [00:01<00:04,  3.78it/s]Downloading 'model.safetensors-00008-of-00011.safetensors' to '/home/ssu/.cache/huggingface/hub/models--Qwen--Qwen3.5-27B/blobs/fe60dbb9d25354c4eb2a9a59d9b1afd07741c8bebab5870f5eea6eadb4cf9a06.incomplete'
+[2026-03-28 20:29:37] Starting: google/gemma-3-27b-it
+[33m⚠️  Warning: 'huggingface-cli download' is deprecated. Use 'hf download' instead.[0m
+Fetching 25 files:   0%|          | 0/25 [00:00<?, ?it/s]Downloading 'config.json' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/11752a47dd94ad115fc842aca7d446ccfab0ff76.incomplete'
+Downloading 'model-00001-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/4da0290139f018bdea488b556c136d0f0ca4506fe5f5555cd97c0f6f2e886add.incomplete'
+Downloading 'chat_template.json' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/719b0cd0d7a373a400b0c119ee0e051f41ea88d9.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/11752a47dd94ad115fc842aca7d446ccfab0ff76
+Downloading 'model-00003-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/c12b9d629d07b4583e19a467713f92b5c1ae8c9d7ef11faf1bdb91c4c7b59efc.incomplete'
+Downloading '.gitattributes' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/cbcdfa664edf09b5633befe61f2ebc855036be77.incomplete'
+Downloading 'generation_config.json' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/37a4c871d263a349f50e4a313db3e72164950702.incomplete'
+Downloading 'added_tokens.json' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/e17bde03d42feda32d1abfca6d3b598b9a020df7.incomplete'
+Downloading 'model-00004-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/7171ed512e46c90cb579a58f66851bad09b028220422ceb1ae85080ab4ffb958.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/cbcdfa664edf09b5633befe61f2ebc855036be77
+Fetching 25 files:   4%|▍         | 1/25 [00:01<00:36,  1.53s/it]Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/e17bde03d42feda32d1abfca6d3b598b9a020df7
+Fetching 25 files:  12%|█▏        | 3/25 [00:01<00:09,  2.22it/s]Downloading 'model-00005-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/9fb9667695749e55d808f407d78f18f80bd8ff999175c2c480cad7075ff5b2cf.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/719b0cd0d7a373a400b0c119ee0e051f41ea88d9
+Fetching 25 files:  16%|█▌        | 4/25 [00:01<00:07,  2.89it/s]Downloading 'model-00002-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/bf17dbadf9c7cd696e4768639601c3300ea659e49f018000956078cefd475cdf.incomplete'
+Download complete. Moving file to /home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/37a4c871d263a349f50e4a313db3e72164950702
+Fetching 25 files:  24%|██▍       | 6/25 [00:02<00:04,  4.03it/s]Downloading 'model-00007-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/0497dda2b32df5d583caaffae35a96f3524a1e4305b850f4b1ce2e60fc354fe4.incomplete'
+Downloading 'model-00008-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/9061b71b9cc82e187bd72c8f4594c5c1d900b0bc98c416d72902209514cf8ac4.incomplete'
+Downloading 'model-00006-of-00012.safetensors' to '/home/ssu/.cache/huggingface/hub/models--google--gemma-3-27b-it/blobs/91ae339063266e0c12da89af8aa0cfdb3f9dc9bb1b4b2678863793a28026dbe7.incomplete'
