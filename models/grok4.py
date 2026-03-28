@@ -25,7 +25,7 @@ class GrokModel(BaseModel):
         self.prompt_adapter = prompt_adapter
         self.tgt_lang = tgt_lang
 
-    def _call(self, system: str | None, user: str):
+    def _complete(self, system: str | None, user: str):
         if self.prompt_adapter:
             user = self.prompt_adapter(user, self.tgt_lang) if self.tgt_lang else self.prompt_adapter(user)
 

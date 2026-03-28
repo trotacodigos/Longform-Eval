@@ -13,11 +13,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 class BaseModel(ABC):
     """
     Abstract base class for all model implementations.
-    Subclasses must implement _call.
+    Subclasses must implement _complete.
     """
     BATCH_WORKERS: int = 32
 
-    def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None):
+    def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None, log_path: str = "inference_result.csv"):
         self.name = name
         self.model_id = model_id
         self.sampling_params = (
@@ -25,15 +25,16 @@ class BaseModel(ABC):
             if isinstance(sampling_params, SamplingParams)
             else SamplingParams.from_dict(sampling_params or {})
         )
+        self.log_path = log_path
         self._csv_lock = threading.Lock()
-
+        
     @abstractmethod
-    def _call(self, system: str, user: str) -> tuple:
+    def _complete(self, system: str, user: str) -> tuple:
         ...
 
-    def generate(self, system: str, user: str, log_path: str = "inference_result.csv"):
+    def generate(self, system: str, user: str):
         t0 = time.perf_counter()
-        text, in_token, out_token = self._call(system, user)
+        text, in_token, out_token = self._complete(system, user)
         latency = time.perf_counter() - t0
 
         if in_token is None:
@@ -51,16 +52,15 @@ class BaseModel(ABC):
             "tps": round(float(tps), 2),
         }
 
-        self._log_to_csv(metrics, log_path)
+        self._log_to_csv(metrics)
         return text, metrics
 
     def generate_batch(
         self,
         prompts: list[tuple[str, str]],
-        log_path: str = "inference_result.csv",
     ) -> list[tuple[str, dict] | None]:
         """
-        Default implementation: parallel _call via ThreadPoolExecutor.
+        Default implementation: parallel _complete via ThreadPoolExecutor.
         Claude subclass overrides this with the Anthropic Batch API.
 
         Returns a list aligned with `prompts`.
@@ -68,46 +68,24 @@ class BaseModel(ABC):
         """
         results = [None] * len(prompts)
 
-        def _worker(idx: int, system: str, user: str):
-            t0 = time.perf_counter()
-            text, in_token, out_token = self._call(system, user)
-            latency = time.perf_counter() - t0
-
-            if in_token is None:
-                in_token = rough_token_count(user)
-            if out_token is None:
-                out_token = rough_token_count(text)
-
-            tps = out_token / latency if latency > 0 else 0.0
-            metrics = {
-                "model_name": self.name,
-                "input_token": int(in_token),
-                "output_token": int(out_token),
-                "latency_sec": round(float(latency), 4),
-                "tps": round(float(tps), 2),
-            }
-            self._log_to_csv(metrics, log_path)
-            return idx, (text, metrics)
-
         with ThreadPoolExecutor(max_workers=self.BATCH_WORKERS) as executor:
             futures = {
-                executor.submit(_worker, i, sys, usr): i
+                executor.submit(self.generate, i, sys, usr): i
                 for i, (sys, usr) in enumerate(prompts)
             }
             for future in as_completed(futures):
+                idx = futures[future]
                 try:
-                    idx, result = future.result()
-                    results[idx] = result
+                    results[idx] = future.result()
                 except Exception as e:
-                    idx = futures[future]
                     print(f"[generate_batch] index {idx} failed: {e}")
 
         return results
 
-    def _log_to_csv(self, metrics: dict, log_path: str):
+    def _log_to_csv(self, metrics: dict):
         with self._csv_lock:
-            file_exists = os.path.isfile(log_path)
-            with open(log_path, mode="a", newline="", encoding="utf-8") as f:
+            file_exists = os.path.isfile(self.log_path)
+            with open(self.log_path, mode="a", newline="", encoding="utf-8") as f:
                 fieldnames = ["model_name", "input_token", "output_token", "latency_sec", "tps"]
                 
                 writer = csv.DictWriter(f, fieldnames=fieldnames)

@@ -18,7 +18,7 @@ class AnthropicModel(BaseModel):
         api_key = keys[0] if keys else os.environ.get("ANTHROPIC_API_KEY")
         self.client = Anthropic(api_key=api_key)
 
-    def _call(self, system: str, user: str):
+    def _complete(self, system: str, user: str):
         """single inference (real-time)"""
         resp = self.client.messages.create(
             model=self.model_id,

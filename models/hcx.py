@@ -18,7 +18,7 @@ class HyperClovaXModel(OpenAIModel):
         self.client = OpenAI(base_url=endpoint, api_key="not-needed")
         self.strip_thinking = strip_thinking
 
-    def _call(self, system: str, user: str):
+    def _complete(self, system: str, user: str):
         # Do not require system prompt
         merged = f"{system}\n{user}" if system else user
 

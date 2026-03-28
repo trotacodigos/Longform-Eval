@@ -15,7 +15,7 @@ class OpenAIModel(BaseModel):
         keys = get_keys("OPENAI_API_KEYS")
         self.client = OpenAI(api_key=keys[0])
 
-    def _call(self, system: str, user: str):
+    def _complete(self, system: str, user: str):
         resp = self.client.chat.completions.create(
             model=self.model_id,
             messages=[
@@ -55,8 +55,7 @@ class OpenAIChatModel(BaseModel):
         self.strip_thinking = strip_thinking
         self.merge_system_prompt = merge_system_prompt
 
-    def _call(self, system: str | None, user: str):
-        """MAIN"""
+    def _complete(self, system: str | None, user: str):
         if self.prompt_adapter:
             user = self.prompt_adapter(user, self.tgt_lang) if self.tgt_lang else self.prompt_adapter(user)
 
