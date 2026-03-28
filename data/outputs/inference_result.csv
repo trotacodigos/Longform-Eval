@@ -1,0 +1,4 @@
+model_name,input_token,output_token,latency_sec,tps
+claude-sonnet-4.5,667,32,,
+claude-sonnet-4.5,2183,179,,
+claude-sonnet-4.5,901,73,,

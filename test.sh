@@ -1,9 +1,9 @@
 #!/bin/bash
 
-python generate.py \
-  --config config/models.yaml \
-  --input_file unittest/dummy_in.jsonl \
-  --output_dir unittest \
-  --models "gpt-4o" \
-  --with_doc \
-  --max_workers 1
+lp="en-ko_KR"
+
+python infer.py \
+  --model "command-a-translate-08-2025" \
+  --input_file data/wmt24pp/$lp/dummy/dummy_in.jsonl \
+  --output_dir "data/outputs/dummy" \
+  --has_doc

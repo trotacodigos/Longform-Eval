@@ -2,6 +2,7 @@
 openai
 anthropic
 requests
+vllm
 
 # Evaluation Metrics
 unbabel-comet
