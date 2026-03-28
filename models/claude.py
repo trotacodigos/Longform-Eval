@@ -13,7 +13,7 @@ class AnthropicModel(BaseModel):
     POLL_INTERVAL: int = 30
 
     def __init__(self, name: str, model_id: str, sampling_params: ClaudeParams | dict | None = None):
-        super().__init__(name, model_id, sampling_params or ClaudeParams)
+        super().__init__(name, model_id, sampling_params or ClaudeParams())
         keys = get_keys("ANTHROPIC_API_KEYS")
         api_key = keys[0] if keys else os.environ.get("ANTHROPIC_API_KEY")
         self.client = Anthropic(api_key=api_key)
@@ -77,7 +77,7 @@ class AnthropicModel(BaseModel):
             idx = int(result.custom_id)
 
             if result.result.type != "succeeded":
-                print(f"[Claude batch] index {idx} failed: {result.result.type}")
+                print(f"[Claude batch] index {idx} failed: {result.result.type} — {result.result}")
                 continue
 
             msg = result.result.message
@@ -92,7 +92,7 @@ class AnthropicModel(BaseModel):
                 "latency_sec": None,   # batch API doesn't expose per-request latency
                 "tps": None,
             }
-            self._log_to_csv(metrics, log_path)
+            self._log_to_csv(metrics)
             results[idx] = (text, metrics)
 
         return results

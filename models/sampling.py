@@ -46,6 +46,8 @@ class OpenAIParams(ThinkingMixin, SamplingParams):
 class ClaudeParams(SamplingParams):
     def to_kwargs(self) -> Dict[str, Any]:
         kwargs = super().to_kwargs()
+        kwargs.pop("top_k", None)
+        kwargs.pop("top_p", None)
         if "stop" in kwargs:
             kwargs["stop_sequences"] = kwargs.pop("stop")
         return kwargs
