@@ -1,6 +1,7 @@
 # LLM API
 openai
 anthropic
+google-genai
 requests
 vllm
 
