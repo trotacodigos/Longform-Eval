@@ -29,6 +29,7 @@ def _build_config(system: str | None, sampling_kwargs: dict) -> types.GenerateCo
 
 class GeminiModel(BaseModel):
     POLL_INTERVAL: int = 10000
+    BATCH_API_MIN_SIZE: int = 100
 
     def __init__(
         self,
@@ -60,8 +61,6 @@ class GeminiModel(BaseModel):
         out_token = getattr(usage, "candidates_token_count", None)
 
         return text, in_token, out_token
-
-    BATCH_API_MIN_SIZE: int = 100  # use batch API only for large jobs
 
     def generate_batch(
         self,

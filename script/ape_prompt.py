@@ -35,7 +35,6 @@ def build_prompt(entry: dict, level="seg-as-input"):
     if missing:
         raise KeyError(f"Missing keys in entry: {missing}")
 
-    #cur_template = next((t for t in _get_templates() if t["level"] == level), None)
     prompt_dic = _get_templates().get(level, None)
     if prompt_dic is None:
         raise ValueError(f"No template found for the given level={level}")
