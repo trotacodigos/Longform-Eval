@@ -14,9 +14,9 @@ from models import REGISTRY
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
+    ap.add_argument("--level", required=True, default="seg-as-input")
     ap.add_argument("--input_file", required=True)
     ap.add_argument("--output_dir", required=True)
-    ap.add_argument("--has_doc", action="store_true", default=False)
     ap.add_argument("--model_params", default="", help="modeling parameters saved in .json")
     args = ap.parse_args()
 
@@ -44,7 +44,7 @@ def main():
         if out_row is None:
             continue
         try:
-            system, user = build_prompt(entry, has_doc=args.has_doc)
+            system, user = build_prompt(entry, level=args.level)
             batch_items.append((out_row, system, user))
         except Exception as e:
             print(f"Prompt error for seg_id={entry.get('seg_id')}: {e}")
@@ -59,6 +59,7 @@ def main():
                 continue
             text, usage = result
             out_row["mt_pe_seg"] = text
+            out_row["level"] = args.level
             out_row["usage"] = {k: usage.get(k) for k in ("input_token", "output_token", "latency_sec")}
             f.write(json.dumps(out_row, ensure_ascii=False) + "\n")
 

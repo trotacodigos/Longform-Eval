@@ -1,14 +1,14 @@
 import os
 import json
-
+from typing import Dict
 from .utils import read_jsonl, LANG_MAP
 
 
 _CACHED_TEMPLATES = None
 
-def _get_templates():
+def _get_templates() -> Dict[str, Dict]:
     global _CACHED_TEMPLATES
-    template = "data/template.jsonl"
+    template = "data/template.json"
     if _CACHED_TEMPLATES is None:
         _CACHED_TEMPLATES = read_jsonl(template)
     return _CACHED_TEMPLATES
@@ -29,15 +29,16 @@ def load_doc_from_json(wmt_year: str, lp: str, direction: str, doc_id: str, syst
         raise ValueError(f"Unknown direction: {direction!r}")
 
 
-def build_prompt(entry: dict, has_doc=True):
+def build_prompt(entry: dict, level="seg-as-input"):
     """src and tgt documents as additional context"""
     missing = [k for k in ("src_lang", "tgt_lang", "src_seg", "tgt_seg") if k not in entry]
     if missing:
         raise KeyError(f"Missing keys in entry: {missing}")
 
-    cur_template = next((t for t in _get_templates() if t["has_doc"] == has_doc), None)
-    if cur_template is None:
-        raise ValueError(f"No template found for has_doc={has_doc}")
+    #cur_template = next((t for t in _get_templates() if t["level"] == level), None)
+    prompt_dic = _get_templates().get(level, None)
+    if prompt_dic is None:
+        raise ValueError(f"No template found for the given level={level}")
 
     params = {k: entry[k] for k in ("src_lang", "tgt_lang", "src_seg", "tgt_seg")}
     lang_map = {v: k for k, v in LANG_MAP.items()}
@@ -47,12 +48,17 @@ def build_prompt(entry: dict, has_doc=True):
     src_doc = load_doc_from_json(entry["wmt_year"], lp, "src", doc_id)
     tgt_doc = load_doc_from_json(entry["wmt_year"], lp, "tgt", doc_id, system=entry["system"])
 
-    if has_doc:
-        params |= {"src_doc": src_doc, "tgt_doc": tgt_doc}
-    else:
+    if level == "seg-as-input":
+        params["src_seg"] = entry["src_seg"]
+        params["tgt_seg"] = entry["tgt_seg"]
+    elif level == "doc-as-context":
+        params = {"src_doc": src_doc, "tgt_doc": tgt_doc}
+    elif level == "doc-as-input":
         params["src_seg"] = src_doc
         params["tgt_seg"] = tgt_doc
+    else:
+        raise ValueError
 
-    user = cur_template["user"].format(**params)
-    system = cur_template["system"].format(tgt_lang=entry["tgt_lang"])
+    user = prompt_dic["user"].format(**params)
+    system = prompt_dic["system"].format(tgt_lang=entry["tgt_lang"])
     return system, user
