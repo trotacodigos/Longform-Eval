@@ -1,7 +1,7 @@
 #!/bin/bash
 
 lp="en-ko_KR"
-level="seg-as-input"
+level="doc-as-input"
 dataset="wmt24pp"
 
 #/home/ssu/Documents/3_docAPE_low/.venv/bin/python infer.py \
