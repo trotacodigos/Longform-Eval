@@ -5,7 +5,9 @@ import os, time
 import copy
 import csv
 import dataclasses
+import threading
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class BaseModel(ABC):
@@ -13,6 +15,8 @@ class BaseModel(ABC):
     Abstract base class for all model implementations.
     Subclasses must implement _call.
     """
+    BATCH_WORKERS: int = 32
+
     def __init__(self, name: str, model_id: str, sampling_params: dict | SamplingParams | None):
         self.name = name
         self.model_id = model_id
@@ -21,6 +25,7 @@ class BaseModel(ABC):
             if isinstance(sampling_params, SamplingParams)
             else SamplingParams.from_dict(sampling_params or {})
         )
+        self._csv_lock = threading.Lock()
 
     @abstractmethod
     def _call(self, system: str, user: str) -> tuple:
@@ -43,23 +48,72 @@ class BaseModel(ABC):
             "input_token": int(in_token),
             "output_token": int(out_token),
             "latency_sec": round(float(latency), 4),
-            "tps": round(float(tps), 2)
-        }    
+            "tps": round(float(tps), 2),
+        }
 
         self._log_to_csv(metrics, log_path)
         return text, metrics
-    
+
+    def generate_batch(
+        self,
+        prompts: list[tuple[str, str]],
+        log_path: str = "inference_result.csv",
+    ) -> list[tuple[str, dict] | None]:
+        """
+        Default implementation: parallel _call via ThreadPoolExecutor.
+        Claude subclass overrides this with the Anthropic Batch API.
+
+        Returns a list aligned with `prompts`.
+        Failed items are returned as None.
+        """
+        results = [None] * len(prompts)
+
+        def _worker(idx: int, system: str, user: str):
+            t0 = time.perf_counter()
+            text, in_token, out_token = self._call(system, user)
+            latency = time.perf_counter() - t0
+
+            if in_token is None:
+                in_token = rough_token_count(user)
+            if out_token is None:
+                out_token = rough_token_count(text)
+
+            tps = out_token / latency if latency > 0 else 0.0
+            metrics = {
+                "model_name": self.name,
+                "input_token": int(in_token),
+                "output_token": int(out_token),
+                "latency_sec": round(float(latency), 4),
+                "tps": round(float(tps), 2),
+            }
+            self._log_to_csv(metrics, log_path)
+            return idx, (text, metrics)
+
+        with ThreadPoolExecutor(max_workers=self.BATCH_WORKERS) as executor:
+            futures = {
+                executor.submit(_worker, i, sys, usr): i
+                for i, (sys, usr) in enumerate(prompts)
+            }
+            for future in as_completed(futures):
+                try:
+                    idx, result = future.result()
+                    results[idx] = result
+                except Exception as e:
+                    idx = futures[future]
+                    print(f"[generate_batch] index {idx} failed: {e}")
+
+        return results
+
     def _log_to_csv(self, metrics: dict, log_path: str):
-        file_exists = os.path.isfile(log_path)
-
-        with open(log_path, mode="a", newline="", encoding="utf-8") as f:
-            fieldnames = ["model_name", "input_token", "output_token", "latency_sec", "tps"]
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-
-            if not file_exists:
-                writer.writeheader()
-
-            writer.writerow(metrics)
+        with self._csv_lock:
+            file_exists = os.path.isfile(log_path)
+            with open(log_path, mode="a", newline="", encoding="utf-8") as f:
+                fieldnames = ["model_name", "input_token", "output_token", "latency_sec", "tps"]
+                
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                if not file_exists:
+                    writer.writeheader()
+                writer.writerow(metrics)
 
     def with_sampling(self, **overrides):
         """

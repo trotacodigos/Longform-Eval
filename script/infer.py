@@ -49,7 +49,7 @@ def main():
 
     # Submit as a batch and write results
     prompts = [(system, user) for _, system, user in batch_items]
-    results = model.generate_batch(prompts)
+    results = model.generate_batch(prompts) # or geenrate
 
     with open(out_path, "w", encoding="utf-8") as f:
         for (out_row, _, _), result in zip(batch_items, results):

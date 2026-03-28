@@ -1,8 +1,8 @@
 import os
 import time
 from anthropic import Anthropic
-from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
-from anthropic.types.messages.batch_create_params import Request
+#from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+#from anthropic.types.messages.batch_create_params import Request
 
 from .base import BaseModel
 from .sampling import ClaudeParams
@@ -10,6 +10,8 @@ from .tools import get_keys, extract_token_usage
 
 
 class AnthropicModel(BaseModel):
+    POLL_INTERVAL: int = 30
+
     def __init__(self, name: str, model_id: str, sampling_params: ClaudeParams | dict | None = None):
         super().__init__(name, model_id, sampling_params or ClaudeParams)
         keys = get_keys("ANTHROPIC_API_KEYS")
@@ -17,6 +19,7 @@ class AnthropicModel(BaseModel):
         self.client = Anthropic(api_key=api_key)
 
     def _call(self, system: str, user: str):
+        """single inference (real-time)"""
         resp = self.client.messages.create(
             model=self.model_id,
             system=system,
@@ -28,50 +31,71 @@ class AnthropicModel(BaseModel):
         in_token, out_token = extract_token_usage(usage)
         return text, in_token, out_token
 
-    def generate_batch(self, prompts: list[tuple[str, str]], poll_interval: int = 60) -> list[tuple[str, dict]]:
-        """Submit prompts as a batch and return (text, metrics) per prompt in order."""
+    def generate_batch(
+        self,
+        prompts: list[tuple[str, str]],
+        log_path: str = "inference_result.csv",
+    ) -> list[tuple[str, dict] | None]:
+        """Submit all prompts as one Anthropic batch; poll until done."""
+
+        # 1. Build requests
         requests = [
-            Request(
-                custom_id=str(i),
-                params=MessageCreateParamsNonStreaming(
-                    model=self.model_id,
-                    system=system,
-                    messages=[{"role": "user", "content": user}],
+            {
+                "custom_id": str(i),
+                "params": {
+                    "model": self.model_id,
+                    "system": system,
+                    "messages": [{"role": "user", "content": user}],
                     **self.sampling_params.to_kwargs(),
-                ),
-            )
+                },
+            }
             for i, (system, user) in enumerate(prompts)
         ]
-
+        
+        # 2. Submit
         batch = self.client.messages.batches.create(requests=requests)
-        print(f"Batch submitted: {batch.id}")
+        batch_id = batch.id
+        print(f"[Claude batch] submitted {len(prompts)} requests → batch_id={batch_id}")
 
+        # 3. Poll until ended
         while True:
-            batch = self.client.messages.batches.retrieve(batch.id)
-            if batch.processing_status == "ended":
+            time.sleep(self.POLL_INTERVAL)
+            status = self.client.messages.batches.retrieve(batch_id)
+            counts = status.request_counts
+            print(
+                f"[Claude batch] processing={counts.processing} "
+                f"succeeded={counts.succeeded} "
+                f"errored={counts.errored}"
+            )
+            if status.processing_status == "ended":
                 break
-            print(f"Batch status: {batch.processing_status} — waiting {poll_interval}s...")
-            time.sleep(poll_interval)
 
-        results = {None: None}  # placeholder
-        ordered = [None] * len(prompts)
-        for result in self.client.messages.batches.results(batch.id):
-            i = int(result.custom_id)
-            if result.result.type == "succeeded":
-                resp = result.result.message
-                text = (resp.content[0].text or "").strip() if resp.content else ""
-                in_token, out_token = extract_token_usage(getattr(resp, "usage", {}))
-                metrics = {
-                    "model_name": self.name,
-                    "input_token": int(in_token or 0),
-                    "output_token": int(out_token or 0),
-                    "latency_sec": None,
-                    "tps": None,
-                }
-                ordered[i] = (text, metrics)
-            else:
-                ordered[i] = ("", {"error": result.result.type})
-        return ordered
+        # 4. Collect results (aligned to original index)
+        results: list[tuple[str, dict] | None] = [None] * len(prompts)
+
+        for result in self.client.messages.batches.results(batch_id):
+            idx = int(result.custom_id)
+
+            if result.result.type != "succeeded":
+                print(f"[Claude batch] index {idx} failed: {result.result.type}")
+                continue
+
+            msg = result.result.message
+            text = (msg.content[0].text or "").strip()
+            in_token = msg.usage.input_tokens
+            out_token = msg.usage.output_tokens
+
+            metrics = {
+                "model_name": self.name,
+                "input_token": int(in_token),
+                "output_token": int(out_token),
+                "latency_sec": None,   # batch API doesn't expose per-request latency
+                "tps": None,
+            }
+            self._log_to_csv(metrics, log_path)
+            results[idx] = (text, metrics)
+
+        return results
     
     
 class ClaudeSonnet4_5(AnthropicModel):
