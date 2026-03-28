@@ -30,7 +30,7 @@ def main():
     in_data = read_jsonl(input_path)
     wmt_year = input_path.parts[1]
 
-    out_data = read_jsonl(input_path.parent.parent / "output.jsonl")
+    out_data = read_jsonl(input_path.parent / "output.jsonl")
     out_data = {(l["seg_id"], l["doc_id"], l["system"]): l for l in out_data}
 
     out_dir.mkdir(parents=True, exist_ok=True)
