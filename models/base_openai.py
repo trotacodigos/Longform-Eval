@@ -135,6 +135,8 @@ class OpenAIModel(BaseModel):
 
 class OpenAIChatModel(BaseModel):
     """requests-based"""
+    BATCH_WORKERS  = 4
+
     def __init__(
         self,
         name: str,
@@ -176,7 +178,7 @@ class OpenAIChatModel(BaseModel):
             **self._extra_payload(),            
         }
         #print(json.dumps(payload, ensure_ascii=False, indent=2))
-        response = requests.post(self.endpoint, json=payload, headers=self._headers(), timeout=600)
+        response = requests.post(self.endpoint, json=payload, headers=self._headers(), timeout=3600)
         response.raise_for_status()
         data = response.json()
 
