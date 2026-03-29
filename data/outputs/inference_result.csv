@@ -1,0 +1,4 @@
+model_name,input_token,output_token,latency_sec,tps
+hunyuan-mt-7b,103,33,32.174,1.03
+hunyuan-mt-7b,149,65,32.5322,2.0
+hunyuan-mt-7b,308,202,34.1735,5.91

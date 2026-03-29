@@ -156,6 +156,7 @@ class OpenAIChatModel(BaseModel):
         self.merge_system_prompt = merge_system_prompt
 
     def _complete(self, system: str | None, user: str):
+        
         if self.prompt_adapter:
             user = self.prompt_adapter(user, self.tgt_lang) if self.tgt_lang else self.prompt_adapter(user)
 
@@ -174,6 +175,7 @@ class OpenAIChatModel(BaseModel):
             **self.sampling_params.to_kwargs(),
             **self._extra_payload(),            
         }
+        #print(json.dumps(payload, ensure_ascii=False, indent=2))
         response = requests.post(self.endpoint, json=payload, headers=self._headers(), timeout=600)
         response.raise_for_status()
         data = response.json()

@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 class SamplingParams:
     temperature: float = 1.0
     top_p: float = 0.95
-    top_k: float = 0.7
+    #top_k: float = 0
     max_tokens: int = 8_192
     stop: Optional[List[str]] = None
 
@@ -38,7 +38,7 @@ class OpenAIParams(ThinkingMixin, SamplingParams):
 
     def to_kwargs(self) -> Dict[str, Any]:
         kwargs = super().to_kwargs()
-        kwargs.pop("top_k", None)
+        #kwargs.pop("top_k", None)
         kwargs.pop("thinking", None)
         if self.thinking:
             kwargs["max_completion_tokens"] = kwargs.pop("max_tokens", None)
@@ -48,7 +48,7 @@ class OpenAIParams(ThinkingMixin, SamplingParams):
 class ClaudeParams(SamplingParams):
     def to_kwargs(self) -> Dict[str, Any]:
         kwargs = super().to_kwargs()
-        kwargs.pop("top_k", None)
+        #kwargs.pop("top_k", None)
         kwargs.pop("top_p", None)
         if "stop" in kwargs:
             kwargs["stop_sequences"] = kwargs.pop("stop")
@@ -127,7 +127,7 @@ class GeminiParams(ThinkingMixin, SamplingParams):
     def to_kwargs(self):
         kwargs = super().to_kwargs()
         kwargs.pop("thinking", None)
-        kwargs.pop("top_k", None)
+        #kwargs.pop("top_k", None)
         kwargs["max_output_tokens"] = kwargs.pop("max_tokens")
         kwargs["thinking_budget"] = -1 if self.thinking else 0
         return kwargs
