@@ -51,7 +51,8 @@ def build_prompt(entry: dict, level="seg-as-input"):
         params["src_seg"] = entry["src_seg"]
         params["tgt_seg"] = entry["tgt_seg"]
     elif level == "doc-as-context":
-        params = {"src_doc": src_doc, "tgt_doc": tgt_doc}
+        params["src_doc"] = src_doc
+        params["tgt_doc"] = tgt_doc
     elif level == "doc-as-input":
         params["src_seg"] = src_doc
         params["tgt_seg"] = tgt_doc
