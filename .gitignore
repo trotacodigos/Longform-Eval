@@ -1,3 +1,7 @@
+inference_result.csv
+download_log.txt
+download_models.sh
+nohup.out
 data/
 data/wmt24pp/old
 .venv/
