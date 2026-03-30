@@ -1,4 +1,4 @@
-./data
+data/
 data/wmt24pp/old
 .venv/
 unittest/
