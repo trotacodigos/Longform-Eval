@@ -7,7 +7,7 @@ class SamplingParams:
     temperature: float = 1.0
     top_p: float = 0.95
     #top_k: float = 0
-    max_tokens: int = 8_192
+    max_tokens: int = 1_024 #8_192
     stop: Optional[List[str]] = None
 
     def to_kwargs(self) -> Dict[str, Any]:
