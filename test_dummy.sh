@@ -6,7 +6,7 @@ dataset="wmt24pp"
 
 #/home/ssu/Documents/3_docAPE_low/.venv/bin/python infer.py \
 python infer.py \
-  --model "hunyuan-mt-7b" \
+  --model "tower-plus-72b" \
   --level $level \
   --input_file data/$dataset/$lp/dummy/dummy_in.jsonl \
   --output_dir data/outputs/dummy
