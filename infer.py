@@ -50,7 +50,6 @@ def main():
             print(f"Prompt error for seg_id={entry.get('seg_id')}: {e}")
 
     # Submit as a batch and write results
-        # Submit as a batch and write results
     prompts = [(system, user) for _, system, user in batch_items]
 
     # Optimization for doc-as-input: many prompts share the same input since doc 
@@ -73,10 +72,14 @@ def main():
         for (out_row, _, _), result in zip(batch_items, results):
             if result is None:
                 continue
+
             text, usage = result
             out_row["mt_pe_seg"] = text
             out_row["level"] = args.level
             out_row["usage"] = {k: usage.get(k) for k in ("input_token", "output_token", "latency_sec")}
+            if args.level == "doc-as-input":
+                out_row["ref_seg"] = out_row["human_pe_seg"] = out_row["bucket_id"] = ""
+                out_row["seg_id"] = 0
             f.write(json.dumps(out_row, ensure_ascii=False) + "\n")
 
 
