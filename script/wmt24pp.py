@@ -1,18 +1,17 @@
 import os
 import pandas as pd
-
+import argparse
 from utils import read_jsonl, write_jsonl, ALLOWED_DOMAINS, LANG_MAP
 from bucketing import create_bucket_id
 from wmt25 import save_dummy
 
 
-LP = ("en-ko_KR",)
 _HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(_HERE, "../data/wmt24pp/")
 
 def preprocess(lp: str):
     src_lang, tgt_lang = lp.split("-")
-    root = os.path.join(_HERE, "../../../data/wmt24pp")
+    root = os.path.join(_HERE, "../../../corpora/wmt24pp")
 
     # 1. metadata
     records = read_jsonl(os.path.join(root, "metadata", lp, "src.jsonl"))
@@ -88,22 +87,25 @@ def merge_data(lp: str):
     return df
 
 
-def main():
-    for lp in LP:
-        out_dir = os.path.join(OUT_DIR, lp)
-        os.makedirs(out_dir, exist_ok=True)
+def main(lp: str):
+    out_dir = os.path.join(OUT_DIR, lp)
+    os.makedirs(out_dir, exist_ok=True)
 
-        df = merge_data(lp)
-        inputs = df[["seg_id", "new_doc_id", "doc_id", "domain", "system",
-                    "src_lang", "tgt_lang", "src_seg", "tgt_seg"]]
-        outputs = df[["seg_id", "doc_id", "bucket_id", "system", "ref_seg", "human_pe_seg"]]
+    df = merge_data(lp)
+    inputs = df[["seg_id", "new_doc_id", "doc_id", "domain", "system",
+                "src_lang", "tgt_lang", "src_seg", "tgt_seg"]]
+    outputs = df[["seg_id", "doc_id", "bucket_id", "system", "ref_seg", "human_pe_seg"]]
 
-        write_jsonl(os.path.join(out_dir, "input.jsonl"), inputs.to_dict(orient="records"))
-        write_jsonl(os.path.join(out_dir, "output.jsonl"), outputs.to_dict(orient="records"))
+    write_jsonl(os.path.join(out_dir, "input.jsonl"), inputs.to_dict(orient="records"))
+    write_jsonl(os.path.join(out_dir, "output.jsonl"), outputs.to_dict(orient="records"))
 
-        # save samples
-        save_dummy(inputs, outputs, out_dir)
+    # save samples
+    save_dummy(inputs, outputs, out_dir)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--lp", type=str, default="en-ko_KR", help="Language pair to process")
+    args = parser.parse_args()
+    lp = args.lp
+    main(lp)

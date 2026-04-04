@@ -9,7 +9,7 @@ for lp in "en-ko_KR" "en-zh_CN"; do
         continue
       fi
       
-      echo "Running inference for $model on $dataset with $level..."
+      echo "Running inference for $model on $lp / $dataset / $level ..."
       /home/ssu/Documents/3_docAPE_low/.venv/bin/python infer.py \
         --model $model \
         --level "$level" \

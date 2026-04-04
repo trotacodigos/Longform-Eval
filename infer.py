@@ -53,7 +53,8 @@ def main():
         # Submit as a batch and write results
     prompts = [(system, user) for _, system, user in batch_items]
 
-    # Optimization for doc-as-input: many prompts share the same input since doc is the same for all segments in a document. 
+    # Optimization for doc-as-input: many prompts share the same input since doc 
+    # is the same for all segments in a document. 
     if args.level == "doc-as-input":
         seen: dict[tuple, int] = {}
         unique_prompts: list[tuple] = []
