@@ -8,7 +8,7 @@ import dataclasses
 import threading
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from tqdm import tqdm
 
 class BaseModel(ABC):
     """
@@ -73,7 +73,7 @@ class BaseModel(ABC):
                 executor.submit(self.generate, sys, usr): i
                 for i, (sys, usr) in enumerate(prompts)
             }
-            for future in as_completed(futures):
+            for future in tqdm(as_completed(futures), total=len(futures), desc="Inferring"):
                 idx = futures[future]
                 try:
                     results[idx] = future.result()

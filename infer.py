@@ -50,8 +50,23 @@ def main():
             print(f"Prompt error for seg_id={entry.get('seg_id')}: {e}")
 
     # Submit as a batch and write results
+        # Submit as a batch and write results
     prompts = [(system, user) for _, system, user in batch_items]
-    results = model.generate_batch(prompts) # or geenrate
+
+    # Optimization for doc-as-input: many prompts share the same input since doc is the same for all segments in a document. 
+    if args.level == "doc-as-input":
+        seen: dict[tuple, int] = {}
+        unique_prompts: list[tuple] = []
+        prompt_to_idx: list[int] = []
+        for p in prompts:
+            if p not in seen:
+                seen[p] = len(unique_prompts)
+                unique_prompts.append(p)
+            prompt_to_idx.append(seen[p])
+        unique_results = model.generate_batch(unique_prompts)
+        results = [unique_results[i] for i in prompt_to_idx]
+    else:
+        results = model.generate_batch(prompts)
 
     with open(out_path, "w", encoding="utf-8") as f:
         for (out_row, _, _), result in zip(batch_items, results):
