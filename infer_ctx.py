@@ -4,11 +4,12 @@ import json
 import os
 import sys
 from tqdm import tqdm
+from collections import defaultdict
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent))
 
-from docape.utils import read_jsonl
-from docape.prompt.rag_prompt import build_prompt
+from script.utils import read_jsonl
+from script.rag_prompt import build_prompt
 from models import REGISTRY
 
 
@@ -24,6 +25,18 @@ def build_batch(in_data, src_lang, tgt_lang, context):
     return batch_items
 
 
+def prepare_reference(fdir: str):
+    _ref_groups = defaultdict(list)
+    for l in read_jsonl(fdir):
+        _ref_groups[(l["doc_id"], l["system"])].append(l)
+
+    ref_dic = {}
+    for (doc_id, system), segs in _ref_groups.items():
+        for new_idx, l in enumerate(sorted(segs, key=lambda x: x["seg_id"])):
+            ref_dic[(doc_id, new_idx, system)] = l
+    return ref_dic
+
+
 def write_results(batch_items, results, out_file, ref_dic, sys_name):
     with open(out_file, "w", encoding="utf-8") as f:
         for (entry, _, _), result in zip(batch_items, results):
@@ -36,6 +49,7 @@ def write_results(batch_items, results, out_file, ref_dic, sys_name):
                 "seg_id": entry["seg_idx"],
                 "bucket_id": line["bucket_id"] if line else None,
                 "mt_pe_seg": text,
+                "tgt_seg": entry["tgt_seg"],
                 "ref_seg": line["ref_seg"] if line else None,
                 "usage": {k: usage.get(k) for k in ("input_token", "output_token", "latency_sec")},
             }
@@ -62,14 +76,15 @@ def main():
 
     # set path
     input_dir = Path(args.input_dir) / f"k{args.context_size}"
-    out_dir = Path(args.output_dir) / lp / args.context
+    out_dir = Path(args.output_dir) / "preliminary" / args.context
     os.makedirs(out_dir, exist_ok=True)
 
     if args.model not in REGISTRY:
         raise ValueError(f"Unknown model '{args.model}'. Available: {list(REGISTRY.keys())}")
     model = REGISTRY[args.model]()
-
-    ref_dic = {(l["doc_id"], l["seg_id"], l["system"]): l for l in read_jsonl(f"data/{year}/{lp}/output.jsonl")}
+    
+    
+    ref_dic = prepare_reference(f"data/{year}/{lp}/output.jsonl")
 
     if args.system is not None:
         available = [f.split(".")[0] for f in os.listdir(input_dir) if f.endswith(".jsonl")]
@@ -77,7 +92,7 @@ def main():
         in_data = read_jsonl(input_dir / f"{args.system}.jsonl")
         batch_items = build_batch(in_data, src_lang, tgt_lang, args.context)
         results = model.generate_batch([(sp, up) for _, sp, up in batch_items])
-        write_results(batch_items, results, out_dir / f"{year}_{args.system}.jsonl", ref_dic, args.system)
+        write_results(batch_items, results, out_dir / f"{year}_{args.system}_{args.context_size}.jsonl", ref_dic, args.system)
 
     else:
         for file in os.listdir(input_dir):
@@ -87,7 +102,7 @@ def main():
             in_data = read_jsonl(input_dir / file)
             batch_items = build_batch(in_data, src_lang, tgt_lang, args.context)
             results = model.generate_batch([(sp, up) for _, sp, up in batch_items])
-            write_results(batch_items, results, out_dir / f"{year}_{sys_name}.jsonl", ref_dic, sys_name)
+            write_results(batch_items, results, out_dir / f"{year}_{sys_name}_k{args.context_size}.jsonl", ref_dic, sys_name)
 
 
 if __name__ == "__main__":

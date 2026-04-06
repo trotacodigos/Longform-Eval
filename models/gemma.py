@@ -9,5 +9,5 @@ class Gemma3Model(OpenAIChatModel):
                  sampling_params: OpenAIChatParams | dict | None = None,
                  strip_thinking: bool = False,
                  merge_system_prompt: bool = False):
-        super().__init__(name, model_id, sampling_params or OpenAIChatParams(), 
+        super().__init__(name, model_id, sampling_params=sampling_params or OpenAIChatParams(),
                          strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
