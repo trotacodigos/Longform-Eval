@@ -5,7 +5,7 @@ class Gemma3Model(OpenAIChatModel):
     # https://huggingface.co/google/gemma-3-27b-it
     def __init__(self,
                  name: str = "gemma-3-27b-it",
-                 model_id: str = "google/gemma-3-27b-it",
+                 model_id: str = "gemma-3-27b-it", #"google/gemma-3-27b-it",
                  sampling_params: OpenAIChatParams | dict | None = None,
                  strip_thinking: bool = False,
                  merge_system_prompt: bool = False):

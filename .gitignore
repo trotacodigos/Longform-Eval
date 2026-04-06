@@ -1,3 +1,4 @@
+script/
 inference_result.csv
 download_log.txt
 download_models.sh
