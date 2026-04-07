@@ -51,19 +51,19 @@ class BaseEvaluator:
 
         for i in range(max_len):
             current_doc = {k: (v[i] if i < len(v) else "") for k, v in docs.items()}
-            test_group = {k: "\n".join(current_group[k] + current_doc[k]).strip() for k in docs.keys()}
-            formatted_prompt = self._format_prompts([test_group][0])
+            test_group = {k: "\n".join(current_group[k] + [current_doc[k]]).strip() for k in docs.keys()}
+            formatted_prompt = self._format_prompts([test_group])[0]
             token_count = len(self.tokenizer.encode(formatted_prompt))
 
             # if not over the limit, append it.
             if token_count <= self.max_chunk_tokens:
                 for k in docs.keys():
-                    current_group[k].append(current_group[k])
+                    current_group[k].append(current_doc[k])
             else:
                 if any(current_group.values()):
                     grouped_data.append({k: "\n".join(v).strip() for k, v in current_group.items()})
 
-                current_group = {k: [current_group[k]] for k in docs.keys()}
+                current_group = {k: [current_doc[k]] for k in docs.keys()}
 
         if any(current_group.values()):
             grouped_data.append({k: "\n".join(v).strip() for k, v in current_group.items()})
