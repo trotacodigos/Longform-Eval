@@ -108,7 +108,10 @@ class QwenParams(ThinkingMixin, OpenAIChatParams):
 
 @dataclass
 class ExaoneParams(ThinkingMixin, OpenAIChatParams):
-    pass
+    def to_kwargs(self):
+        kwargs = super().to_kwargs()
+        kwargs.pop("thinking", None)
+            
 
 @dataclass
 class TowerPlusParams(OpenAIChatParams):

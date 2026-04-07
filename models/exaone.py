@@ -9,7 +9,7 @@ class LGExaoneModel(OpenAIChatModel):
                  sampling_params: ExaoneParams | dict | None = None,
                  strip_thinking: bool = True,
                 ):
-           super().__init__(name, model_id, sampling_params or ExaoneParams(thinking=True), 
+           super().__init__(name, model_id, sampling_params or ExaoneParams(), 
                              strip_thinking=strip_thinking, merge_system_prompt=True)
 
     def _extra_payload(self) -> dict:
@@ -25,5 +25,5 @@ class K_ExaoneModel(LGExaoneModel):
                  sampling_params: ExaoneParams | dict | None = None,
                  strip_thinking: bool = True,
                  merge_system_prompt: bool = False):
-        super().__init__(name, model_id, sampling_params or ExaoneParams(thinking=True),
+        super().__init__(name, model_id, sampling_params or ExaoneParams(thinking=False),
                          strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)

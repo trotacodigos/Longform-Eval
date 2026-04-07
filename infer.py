@@ -6,8 +6,8 @@ from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from docape.utils import read_jsonl
-from docape.prompt.ape_prompt import build_prompt
+from script.utils import read_jsonl
+from script.ape_prompt import build_prompt
 from models import REGISTRY
 
 

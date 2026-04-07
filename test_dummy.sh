@@ -6,9 +6,7 @@ dataset="wmt24pp"
 
 #/home/ssu/Documents/3_docAPE_low/.venv/bin/python infer.py \
 python infer.py \
-  --model "tower-plus-72b" \
+  --model "exaone-4.0-32b" \
   --level $level \
   --input_file data/$dataset/$lp/dummy/dummy_in.jsonl \
   --output_dir data/outputs/dummy
-  #--input_file data/$dataset/$lp/input.jsonl \
-  #--output_dir data/outputs/$level
