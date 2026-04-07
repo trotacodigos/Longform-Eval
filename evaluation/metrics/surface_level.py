@@ -30,3 +30,7 @@ class ChrF_Metric(SacreBLEU_Metric):
 class TER_Metric(SacreBLEU_Metric):
     def __init__(self, batch_size: int = 32):
         super().__init__("TER", TER(asian_support=True), batch_size)
+
+    def evaluate(self, data):
+        scores = super().evaluate(data)
+        return [min(s, 100) if s < 100 else None for s in scores] 
