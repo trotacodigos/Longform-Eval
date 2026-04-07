@@ -111,7 +111,8 @@ class ExaoneParams(ThinkingMixin, OpenAIChatParams):
     def to_kwargs(self):
         kwargs = super().to_kwargs()
         kwargs.pop("thinking", None)
-            
+        return kwargs
+
 
 @dataclass
 class TowerPlusParams(OpenAIChatParams):

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-model="tower-plus-72b"
+model="exaone-4.0-32b"
 for lp in "en-ko_KR" "en-zh_CN"; do
   for dataset in "wmt24pp" "wmt25"; do
     for level in "seg-as-input" "doc-as-input" "doc-as-context"; do
