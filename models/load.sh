@@ -1,1 +1,0 @@
-vllm serve ~/.cache/huggingface/hub/models--tencent--Hunyuan-MT-7B/snapshots/9305c78383f0bcc94358e08667ee2c76107877e3 --trust-remote-code

@@ -11,3 +11,16 @@ class Gemma3Model(OpenAIChatModel):
                  merge_system_prompt: bool = False):
         super().__init__(name, model_id, sampling_params=sampling_params or OpenAIChatParams(),
                          strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
+        
+
+class Gemma4Model(OpenAIChatModel):
+    # https://huggingface.co/google/gemma-3-27b-it
+    def __init__(self,
+                 name: str = "gemma-4-31b-it",
+                 model_id: str = "gemma-4-31b-it", 
+                 sampling_params: OpenAIChatParams | dict | None = None,
+                 strip_thinking: bool = False,
+                 merge_system_prompt: bool = False):
+        super().__init__(name, model_id, sampling_params=sampling_params or OpenAIChatParams(),
+                         strip_thinking=strip_thinking, merge_system_prompt=merge_system_prompt)
+        # The thinking mode is on when <|think|> token is added in front of the system prompt.
