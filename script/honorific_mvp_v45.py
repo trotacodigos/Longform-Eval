@@ -99,6 +99,27 @@ def get_issue_brief_reason(issue_code: str) -> str:
     """
     return ISSUE_BRIEF_REASON_MAP.get(issue_code, "Review required")
 
+def get_review_priority(row: IssueRecord) -> str:
+    """
+    Assign human-review priority for review CSV.
+
+    FOCUS:
+    - Strong E02 style-shift candidates in news where
+      dominant document style is POLITE but the sentence is CASUAL
+
+    NORMAL:
+    - All other cases
+    """
+    if (
+        row.issue_code == ISSUE_E02
+        and row.domain == "news"
+        and row.dominant_doc_style == STYLE_POLITE
+        and row.style_label == STYLE_CASUAL
+    ):
+        return "FOCUS"
+
+    return "NORMAL"
+
 @dataclass
 class PipelineConfig:
     """
@@ -270,6 +291,7 @@ REVIEW_CSV_COLUMNS: List[str] = [
     "sentence",
     "issue_code",
     "severity",
+    "review_priority",
     "brief_reason",
     "subject_text",
     "predicate_text",
@@ -1736,6 +1758,7 @@ def build_review_row(row: IssueRecord) -> Dict[str, Any]:
         "sentence": row.sentence,
         "issue_code": row.issue_code,
         "severity": row.severity,
+        "review_priority": get_review_priority(row),
         "brief_reason": get_issue_brief_reason(row.issue_code),
         "subject_text": row.subject_text,
         "predicate_text": row.predicate_text,
@@ -1752,11 +1775,22 @@ def export_review_csv(rows: List[IssueRecord], out_path: str) -> None:
     output_path = Path(out_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    review_rows = [build_review_row(row) for row in rows]
+    review_rows.sort(
+    key=lambda r: (
+        0 if r["review_priority"] == "FOCUS" else 1,
+        0 if r["severity"] == SEVERITY_ERROR else 1,
+        str(r["doc_id"]),
+        str(r["model"]),
+        int(r["sent_id"]),
+    )
+)
+
     with output_path.open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=REVIEW_CSV_COLUMNS)
         writer.writeheader()
-        for row in rows:
-            writer.writerow(build_review_row(row))
+        for row in review_rows:
+            writer.writerow(row)
 
     print(f"[INFO] Review CSV exported to: {output_path}")
 
@@ -1790,8 +1824,8 @@ def main() -> None:
     Main execution entry.
 
     Current behavior:
-    - Run selected doc_ids one by one
-    - Save one CSV per doc_id
+    - Run either the full dataset or selected doc_ids
+    - Export both raw and review CSV outputs
     """
     # --------------------------------------------------------
     # Input paths
@@ -1802,7 +1836,7 @@ def main() -> None:
     # --------------------------------------------------------
     # Sample mode controls
     # --------------------------------------------------------
-    sample_doc_ids: Optional[List[str]] = ["0"]
+    sample_doc_ids: Optional[List[str]] = None
     sample_models: Optional[List[str]] = None
 
     version_tag = "v45"
