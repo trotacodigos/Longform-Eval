@@ -22,6 +22,7 @@ _MODEL_MAP = {
     "qwen3.5-27b":                  (".qwens",         "Qwen3_5Model"),
     "solar-open-100b":              (".solar",         "SolarOpenModel"),
     "tower-plus-72b":               (".tower_plus",    "TowerPlusModel"),
+    "gemma-4-31b-it":               (".gemma",         "Gemma4Model"),
 }
 
 REGISTRY = {}
