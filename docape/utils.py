@@ -1,12 +1,16 @@
 import json
 
 ALLOWED_DOMAINS = {"literary", "news", "social"}
-LANG_MAP = {"en": "English", "zh_CN": "Chinese", "ko_KR": "Korean (South Korea)"}
+LANG_MAP = {"en": "English", "zh_CN": "Chinese", "ko_KR": "Korean"}
 
 
 def read_jsonl(file: str):
     with open(file, "r", encoding="utf-8") as f:
         return [json.loads(l) for l in f]
+    
+def read_json(file: str):
+    with open(file, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 def write_jsonl(path: str, records: list) -> None:
     with open(path, "w", encoding="utf-8") as f:
