@@ -3,7 +3,7 @@ from docape.utils import LANG_MAP, read_json
 
 import os
 
-def build_prompt(entry: dict, context: str, ctx_dir: str):
+def build_prompt(entry: dict, context: str, ctx_dir: str = None):
     assert context in ("seg", "seq", "rel", "exp", "full"), f"Unsupported context: {context}"
     record = {
         "src_lang": entry["src_lang"],
@@ -17,9 +17,11 @@ def build_prompt(entry: dict, context: str, ctx_dir: str):
         record = {**record, "src_doc": src_doc[entry["new_doc_id"]], "tgt_doc": tgt_doc[entry["new_doc_id"]]}
 
     elif context == "exp":
-        record = {**record, "doc_summary": retrieve_info(entry["doc_id"], ctx_dir)}
+        doc_info = read_json(os.path.join(ctx_dir, "doc_info.json"))
+        record = {**record, "doc_summary": doc_info["doc_id"]}
+
     elif context in ("rel", "seq"):
-        record = {**record, "src_ctx": entry["src_ctx"], "tgt_ctx": entry["tgt_ctx"]}
+        record = {**record, "src_ctx": entry[context]["src_ctx"], "tgt_ctx": entry[context]["tgt_ctx"]}
     else:
         pass
 
@@ -29,11 +31,6 @@ def build_prompt(entry: dict, context: str, ctx_dir: str):
     user = prompt_dic["user"].format(**record) + f"\n\nMUST output in this format:\n<pe>{entry['tgt_lang']} corrected sentence only</pe>"
     system = prompt_dic["system"].format(tgt_lang=entry["tgt_lang"])
     return system, user
-
-
-def retrieve_info(doc_id: str, ctx_dir: str):
-    doc_info = read_json(os.path.join(ctx_dir, "doc_info.json"))
-    return doc_info.get(doc_id)
 
 
 def set_lp_dir(src_lang, tgt_lang):

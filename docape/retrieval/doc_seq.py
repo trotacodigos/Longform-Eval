@@ -28,7 +28,7 @@ def group_by_doc(entries: List[dict]) -> dict:
     groups = defaultdict(list)
     for e in entries:
         groups[(e["system"], e["doc_id"])].append({
-            "seg_id": e["seg_id"], "system": e["system"],
+            "collection_id": e["collection_id"], "seg_id": e["seg_id"], "system": e["system"],
             "src_lang": e["src_lang"], "tgt_lang": e["tgt_lang"],
             "src_seg": e["src_seg"], "tgt_seg": e["tgt_seg"],
             })
